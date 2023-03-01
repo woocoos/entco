@@ -1,6 +1,6 @@
 module github.com/woocoos/entco
 
-go 1.20
+go 1.18
 
 require (
 	entgo.io/contrib v0.3.5
