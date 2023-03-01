@@ -45,7 +45,7 @@ func ChangeRelayNodeType() entgql.SchemaHook {
 func ReplaceGqlMutationInput() entgql.ExtensionOption {
 	rt := gen.MustParse(gen.NewTemplate("gql_mutation_input").
 		Funcs(entgql.TemplateFuncs).
-		ParseFS(_templates, "template/mutation_input.tmpl")).SkipIf(skipMutationTemplate)
+		ParseFS(_templates, "template/gql_mutation_input.tmpl")).SkipIf(skipMutationTemplate)
 	return entgql.WithTemplates([]*gen.Template{
 		entgql.CollectionTemplate,
 		entgql.EnumTemplate,
