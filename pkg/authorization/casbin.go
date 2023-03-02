@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	DomainHeaderKey = "X-Domain-ID"
+	TenantHeaderKey = "X-Tenant-ID"
 )
 
 // SetAuthorization 设置授权器
@@ -40,6 +40,6 @@ func SetAuthorization(cnf *conf.Configuration, driver dialect.Driver) (authorize
 // ctx: 一般就是gin.Context
 func RBACWithDomainRequestParserFunc(ctx context.Context, identity security.Identity, item *security.PermissionItem) []any {
 	gctx := ctx.Value(gin.ContextKey).(*gin.Context)
-	domain := gctx.GetHeader(DomainHeaderKey)
+	domain := gctx.GetHeader(TenantHeaderKey)
 	return []any{identity.Name(), domain, item.AppCode + ":" + item.Action, item.Operator}
 }
