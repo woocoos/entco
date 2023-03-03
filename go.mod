@@ -6,7 +6,7 @@ require (
 	ariga.io/entcache v0.1.1-0.20220825100256-1b8bbeb21c75
 	entgo.io/contrib v0.3.6-0.20230223205559-c77147d29eb0
 	entgo.io/ent v0.11.9
-	github.com/XSAM/otelsql v0.20.0
+	github.com/XSAM/otelsql v0.18.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-sql-driver/mysql v1.7.0
