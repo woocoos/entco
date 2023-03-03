@@ -14,7 +14,7 @@ require (
 	github.com/tsingsun/woocoo v0.2.3-0.20230225134930-b53f613067d1
 	github.com/vektah/gqlparser/v2 v2.4.3-0.20220508162109-d3d9eb001575
 	github.com/woocoos/casbin-ent-adapter v0.0.0-20230221014425-ed342b431fd0
-	go.opentelemetry.io/otel v1.14.0
+	go.opentelemetry.io/otel v1.12.0
 )
 
 require (
@@ -65,8 +65,8 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
-	go.opentelemetry.io/otel/metric v0.37.0 // indirect
-	go.opentelemetry.io/otel/trace v1.14.0 // indirect
+	go.opentelemetry.io/otel/metric v0.35.0 // indirect
+	go.opentelemetry.io/otel/trace v1.12.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
