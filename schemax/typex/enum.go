@@ -1,6 +1,8 @@
 package typex
 
 import (
+	"entgo.io/contrib/entproto"
+	"entgo.io/ent/schema"
 	"fmt"
 	"io"
 	"strconv"
@@ -55,4 +57,12 @@ func (st *SimpleStatus) UnmarshalGQL(val interface{}) error {
 		return fmt.Errorf("%s is not a valid SimpleStatus", str)
 	}
 	return nil
+}
+
+func (st SimpleStatus) ProtoAnnotation() schema.Annotation {
+	return entproto.Enum(map[string]int32{
+		SimpleStatusActive.String():     1,
+		SimpleStatusInactive.String():   2,
+		SimpleStatusProcessing.String(): 3,
+	})
 }

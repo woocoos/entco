@@ -3,6 +3,7 @@ package schemax
 import (
 	"context"
 	"entgo.io/contrib/entgql"
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
@@ -19,13 +20,16 @@ type AuditMixin struct {
 func (e AuditMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("created_by").Immutable().
-			Annotations(entgql.Skip(entgql.SkipMutationCreateInput)),
+			Annotations(entgql.Skip(entgql.SkipMutationCreateInput), entproto.Field(2)),
 		field.Time("created_at").Immutable().Default(time.Now).Immutable().
-			Annotations(entgql.OrderField("createdAt"), entgql.Skip(entgql.SkipMutationCreateInput)),
+			Annotations(entgql.OrderField("createdAt"), entgql.Skip(entgql.SkipMutationCreateInput),
+				entproto.Field(3)),
 		field.Int("updated_by").Optional().
-			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
+			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput),
+				entproto.Field(4)),
 		field.Time("updated_at").Optional().
-			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
+			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput),
+				entproto.Field(5)),
 	}
 }
 

@@ -1,6 +1,7 @@
 package schemax
 
 import (
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema/field"
@@ -17,11 +18,12 @@ type SnowFlakeID struct {
 func (id SnowFlakeID) Fields() []ent.Field {
 	Incremental := false
 	return []ent.Field{
-		field.Int("id").SchemaType(id.SchemaType()).Annotations(entsql.Annotation{
-			Incremental: &Incremental,
-		}).DefaultFunc(func() int {
-			return int(snowflake.New().Int64())
-		}),
+		field.Int("id").SchemaType(id.SchemaType()).
+			Annotations(entsql.Annotation{Incremental: &Incremental},
+				entproto.Field(1)).
+			DefaultFunc(func() int {
+				return int(snowflake.New().Int64())
+			}),
 	}
 }
 

@@ -1,6 +1,7 @@
 package schemax
 
 import (
+	"entgo.io/contrib/entproto"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
@@ -14,7 +15,8 @@ type IntID struct {
 
 func (id IntID) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int("id").SchemaType(id.SchemaType()),
+		field.Int("id").SchemaType(id.SchemaType()).
+			Annotations(entproto.Field(1)),
 	}
 }
 
