@@ -1,4 +1,4 @@
-package initx
+package ecx
 
 import (
 	"ariga.io/entcache"
