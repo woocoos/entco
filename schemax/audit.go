@@ -55,23 +55,35 @@ func AuditHook(next ent.Mutator) ent.Mutator {
 		if !ok {
 			return nil, fmt.Errorf("unexpected audit-log call from mutation type %T", m)
 		}
-		up := security.GenericIdentityFromContext(ctx)
-		uid, err := strconv.Atoi(up.Name())
-		if err != nil {
-			return nil, fmt.Errorf("unexpected identity %w", err)
-		}
 		switch op := m.Op(); {
 		case op.Is(ent.OpCreate):
 			ml.SetCreatedAt(time.Now())
 			if _, exists := ml.CreatedBy(); !exists {
+				uid, err := getUserID(ctx)
+				if err != nil {
+					return nil, err
+				}
 				ml.SetCreatedBy(uid)
 			}
 		case op.Is(ent.OpUpdateOne | ent.OpUpdate):
 			ml.SetUpdatedAt(time.Now())
 			if _, exists := ml.UpdatedBy(); !exists {
+				uid, err := getUserID(ctx)
+				if err != nil {
+					return nil, err
+				}
 				ml.SetUpdatedBy(uid)
 			}
 		}
 		return next.Mutate(ctx, m)
 	})
+}
+
+func getUserID(ctx context.Context) (uid int, err error) {
+	up := security.GenericIdentityFromContext(ctx)
+	uid, err = strconv.Atoi(up.Name())
+	if err != nil {
+		err = fmt.Errorf("unexpected identity %w", err)
+	}
+	return
 }
