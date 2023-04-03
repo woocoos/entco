@@ -14,7 +14,6 @@ import (
 var tenantContextKey = "github.com_woocoos_entco_tenant_id"
 
 type TenantOptions struct {
-	IDType     string
 	Lookup     string
 	RootDomain string
 }
@@ -22,7 +21,6 @@ type TenantOptions struct {
 // TenantIDMiddleware returns a middleware to get tenant id from http request
 func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 	opts := TenantOptions{
-		IDType: "int",
 		Lookup: "header:X-Tenant-ID",
 	}
 	if err := cfg.Unmarshal(&opts); err != nil {
@@ -50,16 +48,12 @@ func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 				}
 			}
 		}
-		if opts.IDType == "int" {
-			v, err := strconv.Atoi(tid)
-			if err != nil {
-				c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid tenant id %s:%v", tid, err))
-				return
-			}
-			c.Set(tenantContextKey, v)
-		} else {
-			c.Set(tenantContextKey, tid)
+		v, err := strconv.Atoi(tid)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid tenant id %s:%v", tid, err))
+			return
 		}
+		c.Set(tenantContextKey, v)
 	}
 }
 
@@ -68,16 +62,28 @@ func RegistryTenantIDMiddleware() web.Option {
 	return web.RegisterMiddlewareByFunc("tenant", TenantIDMiddleware)
 }
 
+func WithTenantID(parent context.Context, id int) context.Context {
+	return context.WithValue(parent, tenantContextKey, id)
+}
+
 // TenantIDFromContext returns the tenant id from context.tenant id is int format
-func TenantIDFromContext[T int | string](ctx context.Context) (val T) {
-	ginCtx := ctx.Value(gin.ContextKey).(*gin.Context)
-	tid := ginCtx.Value(tenantContextKey)
-	if tid == nil {
-		return
+func TenantIDFromContext(ctx context.Context) (id int) {
+	ginCtx, ok := ctx.Value(gin.ContextKey).(*gin.Context)
+	var tid any
+	if ok {
+		tid = ginCtx.Value(tenantContextKey)
+	} else {
+		tid = ctx.Value(tenantContextKey)
 	}
+
 	switch tid.(type) {
-	case int, string:
-		return tid.(T)
+	case int:
+		return tid.(int)
+	case string:
+		v, err := strconv.Atoi(tid.(string))
+		if err == nil {
+			return v
+		}
 	}
 	panic(fmt.Errorf("invalid tenant id type %T", tid))
 }
