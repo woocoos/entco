@@ -14,6 +14,7 @@ import (
 var tenantContextKey = "github.com_woocoos_entco_tenant_id"
 
 type TenantOptions struct {
+	IDType     string
 	Lookup     string
 	RootDomain string
 }
@@ -21,6 +22,7 @@ type TenantOptions struct {
 // TenantIDMiddleware returns a middleware to get tenant id from http request
 func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 	opts := TenantOptions{
+		IDType: "int",
 		Lookup: "header:X-Tenant-ID",
 	}
 	if err := cfg.Unmarshal(&opts); err != nil {
@@ -48,12 +50,16 @@ func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 				}
 			}
 		}
-		v, err := strconv.Atoi(tid)
-		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid tenant id %s:%v", tid, err))
-			return
+		if opts.IDType == "int" {
+			v, err := strconv.Atoi(tid)
+			if err != nil {
+				c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid tenant id %s:%v", tid, err))
+				return
+			}
+			c.Set(tenantContextKey, v)
+		} else {
+			c.Set(tenantContextKey, tid)
 		}
-		c.Set(tenantContextKey, v)
 	}
 }
 
