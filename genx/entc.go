@@ -26,7 +26,18 @@ func GlobalID() entc.Option {
 	}
 }
 
+func SimplePagination() entc.Option {
+	return func(g *gen.Config) error {
+		g.Templates = append(g.Templates, gen.MustParse(gen.NewTemplate("gql_pagination_simple").
+			Funcs(entgql.TemplateFuncs).
+			ParseFS(_templates, "template/gql_pagination_simple.tmpl")))
+		return nil
+	}
+}
+
 // ChangeRelayNodeType is a schema hook for change relay node type to GID. Use with GlobalID().
+//
+// add it to entgql.WithSchemaHook()
 func ChangeRelayNodeType() entgql.SchemaHook {
 	idType := ast.NonNullNamedType("GID", nil)
 	return func(graph *gen.Graph, schema *ast.Schema) error {

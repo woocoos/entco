@@ -1,0 +1,135 @@
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "gql_pagination_simple" }}
+{{ template "header" $ }}
+
+{{- if not (hasTemplate "gql_pagination") }}
+    {{ fail "simple pagination requires field pagination" }}
+{{- end }}
+
+{{ $gqlNodes := filterNodes $.Nodes (skipMode "type") }}
+
+{{ template "import" $ }}
+
+import (
+    "context"
+    "fmt"
+    "github.com/99designs/gqlgen/graphql"
+    "strconv"
+)
+
+var simplePaginationKey = "github.com/woocoos/entco/pkg/ent.SimplePaginzation"
+
+type SimplePagination struct {
+	CurrentIndex int
+	PageIndex    int
+}
+
+// NewSimplePagination creates a new SimplePagination from the given page and count. If both are empty, it returns nil.
+func NewSimplePagination(p, c string) (*SimplePagination, error) {
+	if p == "" && c == "" {
+		return nil, nil
+	}
+	sp := &SimplePagination{}
+	if p != "" {
+		i, err := strconv.Atoi(p)
+		if err != nil {
+			return nil, err
+		}
+		sp.PageIndex = i
+	}
+	if c != "" {
+		i, err := strconv.Atoi(c)
+		if err != nil {
+			return nil, err
+		}
+		sp.CurrentIndex = i
+	}
+	return sp, nil
+}
+
+{{ range $node := $gqlNodes -}}
+    {{ $r := $node.Receiver -}}
+    {{ $query := print $node.QueryName -}}
+    {{ $names := nodePaginationNames $node -}}
+    {{ $name := $names.Node -}}
+    {{ $opt := print $name "PaginateOption" -}}
+    {{ $conn := $names.Connection -}}
+    func ({{ $r }} *{{ $query }}) SimplePaginate(
+        ctx context.Context,sp *SimplePagination,after *Cursor, first *int,
+        before *Cursor, last *int, opts ...{{ $opt }},
+    ) (*{{ $conn }}, error) {
+    {{- with extend $ "Node" $node "Query" $r -}}
+        {{ template "gql_pagination_simple/helper/paginate" . }}
+    {{- end -}}
+    }
+{{ end }}
+
+{{ end }}
+
+{{ define "gql_pagination_simple/helper/paginate" }}
+	{{- $node := $.Scope.Node }}
+	{{- $r := $.Scope.Query }}
+	{{- $names := nodePaginationNames $node }}
+	{{- $name := $names.Node }}
+	{{- $order := $names.Order }}
+	{{- $edge := $names.Edge }}
+	{{- $conn := $names.Connection }}
+	{{- $newPager := print "new" $name "Pager" -}}
+
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := {{ $newPager }}(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if {{ $r }}, err = pager.applyFilter({{ $r }}); err != nil {
+		return nil, err
+	}
+	{{- /* Ensure the "edges" field is marshaled as "[]" in case it is empty. */}}
+	conn := &{{ $conn }}{Edges: []*{{ $edge }}{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			if conn.TotalCount, err = {{ $r }}.Clone().Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+		{{- /* TotalCount will be settled by conn.build() */}}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+
+	if {{ $r }}, err = pager.applyCursors({{ $r }}, after, before); err != nil {
+		return nil, err
+	}
+	{{ $r }} = pager.applyOrder({{ $r }})
+	if limit := paginateLimit(first, last); limit != 0 {
+		{{ $r }}.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := {{ $r }}.collectField(ctx, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+
+    if sp!= nil {
+        if first != nil {
+            {{ $r }}.Offset((sp.PageIndex - sp.CurrentIndex - 1) * *first)
+        }
+        if last != nil {
+            {{ $r }}.Offset((sp.CurrentIndex - sp.PageIndex - 1) * *last)
+        }
+    }
+	nodes, err := {{ $r }}.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+{{ end }}

@@ -4,8 +4,8 @@ go 1.20
 
 require (
 	ariga.io/entcache v0.1.1-0.20220825100256-1b8bbeb21c75
-	entgo.io/contrib v0.3.6-0.20230223205559-c77147d29eb0
-	entgo.io/ent v0.11.9
+	entgo.io/contrib v0.4.0
+	entgo.io/ent v0.12.0
 	github.com/XSAM/otelsql v0.18.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/gin-gonic/gin v1.9.0
@@ -19,7 +19,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.9.1 // indirect
+	ariga.io/atlas v0.10.0 // indirect
 	github.com/99designs/gqlgen v0.17.5-0.20220428154617-9250f9ac1f90 // indirect
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
@@ -83,11 +83,11 @@ require (
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
 	golang.org/x/exp v0.0.0-20221230185412-738e83a70c30 // indirect
-	golang.org/x/mod v0.8.0 // indirect
+	golang.org/x/mod v0.9.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
-	golang.org/x/tools v0.6.1-0.20230222164832-25d2519c8696 // indirect
+	golang.org/x/tools v0.7.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
