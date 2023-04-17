@@ -4,8 +4,8 @@ go 1.20
 
 require (
 	ariga.io/entcache v0.1.1-0.20220825100256-1b8bbeb21c75
-	entgo.io/contrib v0.4.0
-	entgo.io/ent v0.12.0
+	entgo.io/contrib v0.4.1
+	entgo.io/ent v0.12.1
 	github.com/XSAM/otelsql v0.18.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/gin-gonic/gin v1.9.0
