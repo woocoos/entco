@@ -9,10 +9,7 @@ import (
 	"github.com/tsingsun/woocoo/pkg/security"
 	"github.com/woocoos/casbin-ent-adapter"
 	"github.com/woocoos/casbin-ent-adapter/ent"
-)
-
-var (
-	TenantHeaderKey = "X-Tenant-ID"
+	"github.com/woocoos/entco/pkg/identity"
 )
 
 // SetAuthorization 设置授权器
@@ -38,8 +35,9 @@ func SetAuthorization(cnf *conf.Configuration, driver dialect.Driver) (authorize
 // RBACWithDomainRequestParserFunc 以RBAC with domain模型生成casbin请求
 //
 // ctx: 一般就是gin.Context
-func RBACWithDomainRequestParserFunc(ctx context.Context, identity security.Identity, item *security.PermissionItem) []any {
+func RBACWithDomainRequestParserFunc(ctx context.Context, id security.Identity, item *security.PermissionItem) []any {
 	gctx := ctx.Value(gin.ContextKey).(*gin.Context)
-	domain := gctx.GetHeader(TenantHeaderKey)
-	return []any{identity.Name(), domain, item.AppCode + ":" + item.Action, item.Operator}
+	domain := gctx.GetHeader(identity.TenantHeaderKey)
+	p := item.AppCode + ":" + item.Action
+	return []any{id.Name(), domain, p, item.Operator}
 }

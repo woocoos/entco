@@ -11,7 +11,10 @@ import (
 	"strconv"
 )
 
-var tenantContextKey = "github.com_woocoos_entco_tenant_id"
+var (
+	tenantContextKey = "github.com_woocoos_entco_tenant_id"
+	TenantHeaderKey  = "X-Tenant-ID"
+)
 
 type TenantOptions struct {
 	Lookup     string
@@ -21,7 +24,7 @@ type TenantOptions struct {
 // TenantIDMiddleware returns a middleware to get tenant id from http request
 func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 	opts := TenantOptions{
-		Lookup: "header:X-Tenant-ID",
+		Lookup: "header:" + TenantHeaderKey,
 	}
 	if err := cfg.Unmarshal(&opts); err != nil {
 		panic(err)
@@ -67,9 +70,9 @@ func WithTenantID(parent context.Context, id int) context.Context {
 }
 
 // TenantIDFromContext returns the tenant id from context.tenant id is int format
-func TenantIDFromContext(ctx context.Context) (id int) {
-	ginCtx, ok := ctx.Value(gin.ContextKey).(*gin.Context)
+func TenantIDFromContext(ctx context.Context) (id int, err error) {
 	var tid any
+	ginCtx, ok := ctx.Value(gin.ContextKey).(*gin.Context)
 	if ok {
 		tid = ginCtx.Value(tenantContextKey)
 	} else {
@@ -78,12 +81,12 @@ func TenantIDFromContext(ctx context.Context) (id int) {
 
 	switch tid.(type) {
 	case int:
-		return tid.(int)
+		return tid.(int), nil
 	case string:
-		v, err := strconv.Atoi(tid.(string))
+		id, err = strconv.Atoi(tid.(string))
 		if err == nil {
-			return v
+			return
 		}
 	}
-	panic(fmt.Errorf("invalid tenant id type %T", tid))
+	return 0, fmt.Errorf("invalid tenant id type %T", tid)
 }
