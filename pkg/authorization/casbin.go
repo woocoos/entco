@@ -2,7 +2,7 @@ package authorization
 
 import (
 	"context"
-	"entgo.io/ent/dialect"
+	casbinerr "github.com/casbin/casbin/v2/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/tsingsun/woocoo/pkg/authz"
 	"github.com/tsingsun/woocoo/pkg/conf"
@@ -10,16 +10,13 @@ import (
 	"github.com/woocoos/casbin-ent-adapter"
 	"github.com/woocoos/casbin-ent-adapter/ent"
 	"github.com/woocoos/entco/pkg/identity"
+	"strconv"
+	"strings"
 )
 
 // SetAuthorization 设置授权器
-func SetAuthorization(cnf *conf.Configuration, driver dialect.Driver) (authorizer *authz.Authorization, err error) {
-	casbinClient := ent.NewClient(ent.Driver(driver))
-	adp, err := entadapter.NewAdapterWithClient(casbinClient)
-	if err != nil {
-		return
-	}
-	err = casbinClient.Schema.Create(context.Background())
+func SetAuthorization(cnf *conf.Configuration, client *ent.Client, opts ...entadapter.Option) (authorizer *authz.Authorization, err error) {
+	adp, err := entadapter.NewAdapterWithClient(client, opts...)
 	if err != nil {
 		return
 	}
@@ -40,4 +37,57 @@ func RBACWithDomainRequestParserFunc(ctx context.Context, id security.Identity, 
 	domain := gctx.GetHeader(identity.TenantHeaderKey)
 	p := item.AppCode + ":" + item.Action
 	return []any{id.Name(), domain, p, item.Operator}
+}
+
+func GetAllowedObjectConditions(user string, action string, prefix string, domain string) ([]string, error) {
+	permissions := authz.DefaultAuthorization.BaseEnforcer().GetPermissionsForUserInDomain(user, domain)
+	var objectConditions []string
+	for _, policy := range permissions {
+		// policy {sub, domain, obj, act}
+		if policy[3] == action {
+			if !strings.HasPrefix(policy[2], prefix) {
+				return nil, casbinerr.ERR_OBJ_CONDITION
+			}
+			objectConditions = append(objectConditions, strings.TrimPrefix(policy[2], prefix))
+		}
+	}
+
+	if len(objectConditions) == 0 {
+		return nil, casbinerr.ERR_EMPTY_CONDITION
+	}
+
+	return objectConditions, nil
+}
+
+const (
+	ArnSplit   = ":"
+	blockSplit = "/"
+)
+
+// FormatArnPrefix 资源格式化前缀
+func FormatArnPrefix(app, domain, resource string) string {
+	return strings.Join([]string{app, domain, resource, ""}, ArnSplit)
+}
+
+// ReplaceTenantID 替换资源中的tenant_id
+func ReplaceTenantID(input string, tenantID int) string {
+	return strings.Replace(input, ArnSplit+"tenant_id"+ArnSplit, ArnSplit+strconv.Itoa(tenantID)+ArnSplit, -1)
+}
+
+// FormatResourceArn 格式化资源ARN
+func FormatResourceArn(resource string) string {
+	subs := strings.Split(resource, ArnSplit)
+	var ns []string
+	for _, s := range subs {
+		if !strings.Contains(s, blockSplit) {
+			ns = append(ns, s)
+		}
+		ss := strings.Split(s, blockSplit)
+		if len(ss) > 1 {
+			if ss[1] != "" && ss[1] != "*" {
+				ns = append(ns, s)
+			}
+		}
+	}
+	return strings.Join(ns, ArnSplit)
 }

@@ -3,6 +3,8 @@
 package world
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"github.com/woocoos/entco/integration/helloapp/ent/predicate"
 )
@@ -57,9 +59,19 @@ func TenantID(v int) predicate.World {
 	return predicate.World(sql.FieldEQ(FieldTenantID, v))
 }
 
+// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
+func DeletedAt(v time.Time) predicate.World {
+	return predicate.World(sql.FieldEQ(FieldDeletedAt, v))
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.World {
 	return predicate.World(sql.FieldEQ(FieldName, v))
+}
+
+// PowerBy applies equality check predicate on the "power_by" field. It's identical to PowerByEQ.
+func PowerBy(v string) predicate.World {
+	return predicate.World(sql.FieldEQ(FieldPowerBy, v))
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
@@ -100,6 +112,56 @@ func TenantIDLT(v int) predicate.World {
 // TenantIDLTE applies the LTE predicate on the "tenant_id" field.
 func TenantIDLTE(v int) predicate.World {
 	return predicate.World(sql.FieldLTE(FieldTenantID, v))
+}
+
+// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
+func DeletedAtEQ(v time.Time) predicate.World {
+	return predicate.World(sql.FieldEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
+func DeletedAtNEQ(v time.Time) predicate.World {
+	return predicate.World(sql.FieldNEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtIn applies the In predicate on the "deleted_at" field.
+func DeletedAtIn(vs ...time.Time) predicate.World {
+	return predicate.World(sql.FieldIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
+func DeletedAtNotIn(vs ...time.Time) predicate.World {
+	return predicate.World(sql.FieldNotIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtGT applies the GT predicate on the "deleted_at" field.
+func DeletedAtGT(v time.Time) predicate.World {
+	return predicate.World(sql.FieldGT(FieldDeletedAt, v))
+}
+
+// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
+func DeletedAtGTE(v time.Time) predicate.World {
+	return predicate.World(sql.FieldGTE(FieldDeletedAt, v))
+}
+
+// DeletedAtLT applies the LT predicate on the "deleted_at" field.
+func DeletedAtLT(v time.Time) predicate.World {
+	return predicate.World(sql.FieldLT(FieldDeletedAt, v))
+}
+
+// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
+func DeletedAtLTE(v time.Time) predicate.World {
+	return predicate.World(sql.FieldLTE(FieldDeletedAt, v))
+}
+
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.World {
+	return predicate.World(sql.FieldIsNull(FieldDeletedAt))
+}
+
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.World {
+	return predicate.World(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -165,6 +227,81 @@ func NameEqualFold(v string) predicate.World {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.World {
 	return predicate.World(sql.FieldContainsFold(FieldName, v))
+}
+
+// PowerByEQ applies the EQ predicate on the "power_by" field.
+func PowerByEQ(v string) predicate.World {
+	return predicate.World(sql.FieldEQ(FieldPowerBy, v))
+}
+
+// PowerByNEQ applies the NEQ predicate on the "power_by" field.
+func PowerByNEQ(v string) predicate.World {
+	return predicate.World(sql.FieldNEQ(FieldPowerBy, v))
+}
+
+// PowerByIn applies the In predicate on the "power_by" field.
+func PowerByIn(vs ...string) predicate.World {
+	return predicate.World(sql.FieldIn(FieldPowerBy, vs...))
+}
+
+// PowerByNotIn applies the NotIn predicate on the "power_by" field.
+func PowerByNotIn(vs ...string) predicate.World {
+	return predicate.World(sql.FieldNotIn(FieldPowerBy, vs...))
+}
+
+// PowerByGT applies the GT predicate on the "power_by" field.
+func PowerByGT(v string) predicate.World {
+	return predicate.World(sql.FieldGT(FieldPowerBy, v))
+}
+
+// PowerByGTE applies the GTE predicate on the "power_by" field.
+func PowerByGTE(v string) predicate.World {
+	return predicate.World(sql.FieldGTE(FieldPowerBy, v))
+}
+
+// PowerByLT applies the LT predicate on the "power_by" field.
+func PowerByLT(v string) predicate.World {
+	return predicate.World(sql.FieldLT(FieldPowerBy, v))
+}
+
+// PowerByLTE applies the LTE predicate on the "power_by" field.
+func PowerByLTE(v string) predicate.World {
+	return predicate.World(sql.FieldLTE(FieldPowerBy, v))
+}
+
+// PowerByContains applies the Contains predicate on the "power_by" field.
+func PowerByContains(v string) predicate.World {
+	return predicate.World(sql.FieldContains(FieldPowerBy, v))
+}
+
+// PowerByHasPrefix applies the HasPrefix predicate on the "power_by" field.
+func PowerByHasPrefix(v string) predicate.World {
+	return predicate.World(sql.FieldHasPrefix(FieldPowerBy, v))
+}
+
+// PowerByHasSuffix applies the HasSuffix predicate on the "power_by" field.
+func PowerByHasSuffix(v string) predicate.World {
+	return predicate.World(sql.FieldHasSuffix(FieldPowerBy, v))
+}
+
+// PowerByIsNil applies the IsNil predicate on the "power_by" field.
+func PowerByIsNil() predicate.World {
+	return predicate.World(sql.FieldIsNull(FieldPowerBy))
+}
+
+// PowerByNotNil applies the NotNil predicate on the "power_by" field.
+func PowerByNotNil() predicate.World {
+	return predicate.World(sql.FieldNotNull(FieldPowerBy))
+}
+
+// PowerByEqualFold applies the EqualFold predicate on the "power_by" field.
+func PowerByEqualFold(v string) predicate.World {
+	return predicate.World(sql.FieldEqualFold(FieldPowerBy, v))
+}
+
+// PowerByContainsFold applies the ContainsFold predicate on the "power_by" field.
+func PowerByContainsFold(v string) predicate.World {
+	return predicate.World(sql.FieldContainsFold(FieldPowerBy, v))
 }
 
 // And groups predicates with the AND operator between them.

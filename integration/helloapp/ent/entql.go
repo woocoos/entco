@@ -25,8 +25,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "World",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			world.FieldTenantID: {Type: field.TypeInt, Column: world.FieldTenantID},
-			world.FieldName:     {Type: field.TypeString, Column: world.FieldName},
+			world.FieldTenantID:  {Type: field.TypeInt, Column: world.FieldTenantID},
+			world.FieldDeletedAt: {Type: field.TypeTime, Column: world.FieldDeletedAt},
+			world.FieldName:      {Type: field.TypeString, Column: world.FieldName},
+			world.FieldPowerBy:   {Type: field.TypeString, Column: world.FieldPowerBy},
 		},
 	}
 	return graph
@@ -83,7 +85,17 @@ func (f *WorldFilter) WhereTenantID(p entql.IntP) {
 	f.Where(p.Field(world.FieldTenantID))
 }
 
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *WorldFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(world.FieldDeletedAt))
+}
+
 // WhereName applies the entql string predicate on the name field.
 func (f *WorldFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(world.FieldName))
+}
+
+// WherePowerBy applies the entql string predicate on the power_by field.
+func (f *WorldFilter) WherePowerBy(p entql.StringP) {
+	f.Where(p.Field(world.FieldPowerBy))
 }

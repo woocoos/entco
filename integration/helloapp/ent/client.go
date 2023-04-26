@@ -288,7 +288,8 @@ func (c *WorldClient) Hooks() []Hook {
 
 // Interceptors returns the client interceptors.
 func (c *WorldClient) Interceptors() []Interceptor {
-	return c.inters.World
+	inters := c.inters.World
+	return append(inters[:len(inters):len(inters)], world.Interceptors[:]...)
 }
 
 func (c *WorldClient) mutate(ctx context.Context, m *WorldMutation) (Value, error) {

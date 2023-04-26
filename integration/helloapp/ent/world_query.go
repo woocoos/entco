@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math"
 
@@ -326,12 +325,6 @@ func (wq *WorldQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		wq.sql = prev
-	}
-	if world.Policy == nil {
-		return errors.New("ent: uninitialized world.Policy (forgotten import ent/runtime?)")
-	}
-	if err := world.Policy.EvalQuery(ctx, wq); err != nil {
-		return err
 	}
 	return nil
 }

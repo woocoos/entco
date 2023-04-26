@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,9 +28,49 @@ func (wu *WorldUpdate) Where(ps ...predicate.World) *WorldUpdate {
 	return wu
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (wu *WorldUpdate) SetDeletedAt(t time.Time) *WorldUpdate {
+	wu.mutation.SetDeletedAt(t)
+	return wu
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (wu *WorldUpdate) SetNillableDeletedAt(t *time.Time) *WorldUpdate {
+	if t != nil {
+		wu.SetDeletedAt(*t)
+	}
+	return wu
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (wu *WorldUpdate) ClearDeletedAt() *WorldUpdate {
+	wu.mutation.ClearDeletedAt()
+	return wu
+}
+
 // SetName sets the "name" field.
 func (wu *WorldUpdate) SetName(s string) *WorldUpdate {
 	wu.mutation.SetName(s)
+	return wu
+}
+
+// SetPowerBy sets the "power_by" field.
+func (wu *WorldUpdate) SetPowerBy(s string) *WorldUpdate {
+	wu.mutation.SetPowerBy(s)
+	return wu
+}
+
+// SetNillablePowerBy sets the "power_by" field if the given value is not nil.
+func (wu *WorldUpdate) SetNillablePowerBy(s *string) *WorldUpdate {
+	if s != nil {
+		wu.SetPowerBy(*s)
+	}
+	return wu
+}
+
+// ClearPowerBy clears the value of the "power_by" field.
+func (wu *WorldUpdate) ClearPowerBy() *WorldUpdate {
+	wu.mutation.ClearPowerBy()
 	return wu
 }
 
@@ -74,8 +115,20 @@ func (wu *WorldUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := wu.mutation.DeletedAt(); ok {
+		_spec.SetField(world.FieldDeletedAt, field.TypeTime, value)
+	}
+	if wu.mutation.DeletedAtCleared() {
+		_spec.ClearField(world.FieldDeletedAt, field.TypeTime)
+	}
 	if value, ok := wu.mutation.Name(); ok {
 		_spec.SetField(world.FieldName, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.PowerBy(); ok {
+		_spec.SetField(world.FieldPowerBy, field.TypeString, value)
+	}
+	if wu.mutation.PowerByCleared() {
+		_spec.ClearField(world.FieldPowerBy, field.TypeString)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, wu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -97,9 +150,49 @@ type WorldUpdateOne struct {
 	mutation *WorldMutation
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (wuo *WorldUpdateOne) SetDeletedAt(t time.Time) *WorldUpdateOne {
+	wuo.mutation.SetDeletedAt(t)
+	return wuo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (wuo *WorldUpdateOne) SetNillableDeletedAt(t *time.Time) *WorldUpdateOne {
+	if t != nil {
+		wuo.SetDeletedAt(*t)
+	}
+	return wuo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (wuo *WorldUpdateOne) ClearDeletedAt() *WorldUpdateOne {
+	wuo.mutation.ClearDeletedAt()
+	return wuo
+}
+
 // SetName sets the "name" field.
 func (wuo *WorldUpdateOne) SetName(s string) *WorldUpdateOne {
 	wuo.mutation.SetName(s)
+	return wuo
+}
+
+// SetPowerBy sets the "power_by" field.
+func (wuo *WorldUpdateOne) SetPowerBy(s string) *WorldUpdateOne {
+	wuo.mutation.SetPowerBy(s)
+	return wuo
+}
+
+// SetNillablePowerBy sets the "power_by" field if the given value is not nil.
+func (wuo *WorldUpdateOne) SetNillablePowerBy(s *string) *WorldUpdateOne {
+	if s != nil {
+		wuo.SetPowerBy(*s)
+	}
+	return wuo
+}
+
+// ClearPowerBy clears the value of the "power_by" field.
+func (wuo *WorldUpdateOne) ClearPowerBy() *WorldUpdateOne {
+	wuo.mutation.ClearPowerBy()
 	return wuo
 }
 
@@ -174,8 +267,20 @@ func (wuo *WorldUpdateOne) sqlSave(ctx context.Context) (_node *World, err error
 			}
 		}
 	}
+	if value, ok := wuo.mutation.DeletedAt(); ok {
+		_spec.SetField(world.FieldDeletedAt, field.TypeTime, value)
+	}
+	if wuo.mutation.DeletedAtCleared() {
+		_spec.ClearField(world.FieldDeletedAt, field.TypeTime)
+	}
 	if value, ok := wuo.mutation.Name(); ok {
 		_spec.SetField(world.FieldName, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.PowerBy(); ok {
+		_spec.SetField(world.FieldPowerBy, field.TypeString, value)
+	}
+	if wuo.mutation.PowerByCleared() {
+		_spec.ClearField(world.FieldPowerBy, field.TypeString)
 	}
 	_node = &World{config: wuo.config}
 	_spec.Assign = _node.assignValues

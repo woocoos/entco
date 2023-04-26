@@ -3,31 +3,32 @@
 package runtime
 
 import (
-	"context"
-
 	"github.com/woocoos/entco/integration/helloapp/ent/schema"
 	"github.com/woocoos/entco/integration/helloapp/ent/world"
-
-	"entgo.io/ent"
-	"entgo.io/ent/privacy"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	world.Policy = privacy.NewPolicies(schema.World{})
-	world.Hooks[0] = func(next ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-			if err := world.Policy.EvalMutation(ctx, m); err != nil {
-				return nil, err
-			}
-			return next.Mutate(ctx, m)
-		})
-	}
+	worldMixin := schema.World{}.Mixin()
+	worldMixinHooks1 := worldMixin[1].Hooks()
+	worldMixinHooks2 := worldMixin[2].Hooks()
+	world.Hooks[0] = worldMixinHooks1[0]
+	world.Hooks[1] = worldMixinHooks2[0]
+	worldMixinInters1 := worldMixin[1].Interceptors()
+	worldMixinInters2 := worldMixin[2].Interceptors()
+	world.Interceptors[0] = worldMixinInters1[0]
+	world.Interceptors[1] = worldMixinInters2[0]
+	worldFields := schema.World{}.Fields()
+	_ = worldFields
+	// worldDescPowerBy is the schema descriptor for power_by field.
+	worldDescPowerBy := worldFields[1].Descriptor()
+	// world.DefaultPowerBy holds the default value on creation for the power_by field.
+	world.DefaultPowerBy = worldDescPowerBy.Default.(string)
 }
 
 const (
-	Version = "v0.12.1"                                         // Version of ent codegen.
-	Sum     = "h1:bqK+WMwfjpTsFiXx9tQSEZMNLyAADSx5Y1xySjT4Tm8=" // Sum of ent codegen.
+	Version = "v0.12.2"                                         // Version of ent codegen.
+	Sum     = "h1:Ndl/JvCX76xCtUDlrUfMnOKBRodAtxE5yfGYxjbOxmM=" // Sum of ent codegen.
 )

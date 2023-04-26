@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -25,9 +26,37 @@ func (wc *WorldCreate) SetTenantID(i int) *WorldCreate {
 	return wc
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (wc *WorldCreate) SetDeletedAt(t time.Time) *WorldCreate {
+	wc.mutation.SetDeletedAt(t)
+	return wc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (wc *WorldCreate) SetNillableDeletedAt(t *time.Time) *WorldCreate {
+	if t != nil {
+		wc.SetDeletedAt(*t)
+	}
+	return wc
+}
+
 // SetName sets the "name" field.
 func (wc *WorldCreate) SetName(s string) *WorldCreate {
 	wc.mutation.SetName(s)
+	return wc
+}
+
+// SetPowerBy sets the "power_by" field.
+func (wc *WorldCreate) SetPowerBy(s string) *WorldCreate {
+	wc.mutation.SetPowerBy(s)
+	return wc
+}
+
+// SetNillablePowerBy sets the "power_by" field if the given value is not nil.
+func (wc *WorldCreate) SetNillablePowerBy(s *string) *WorldCreate {
+	if s != nil {
+		wc.SetPowerBy(*s)
+	}
 	return wc
 }
 
@@ -44,6 +73,9 @@ func (wc *WorldCreate) Mutation() *WorldMutation {
 
 // Save creates the World in the database.
 func (wc *WorldCreate) Save(ctx context.Context) (*World, error) {
+	if err := wc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks[*World, WorldMutation](ctx, wc.sqlSave, wc.mutation, wc.hooks)
 }
 
@@ -67,6 +99,15 @@ func (wc *WorldCreate) ExecX(ctx context.Context) {
 	if err := wc.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// defaults sets the default values of the builder before save.
+func (wc *WorldCreate) defaults() error {
+	if _, ok := wc.mutation.PowerBy(); !ok {
+		v := world.DefaultPowerBy
+		wc.mutation.SetPowerBy(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -113,9 +154,17 @@ func (wc *WorldCreate) createSpec() (*World, *sqlgraph.CreateSpec) {
 		_spec.SetField(world.FieldTenantID, field.TypeInt, value)
 		_node.TenantID = value
 	}
+	if value, ok := wc.mutation.DeletedAt(); ok {
+		_spec.SetField(world.FieldDeletedAt, field.TypeTime, value)
+		_node.DeletedAt = value
+	}
 	if value, ok := wc.mutation.Name(); ok {
 		_spec.SetField(world.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := wc.mutation.PowerBy(); ok {
+		_spec.SetField(world.FieldPowerBy, field.TypeString, value)
+		_node.PowerBy = value
 	}
 	return _node, _spec
 }
@@ -134,6 +183,7 @@ func (wcb *WorldCreateBulk) Save(ctx context.Context) ([]*World, error) {
 	for i := range wcb.builders {
 		func(i int, root context.Context) {
 			builder := wcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*WorldMutation)
 				if !ok {

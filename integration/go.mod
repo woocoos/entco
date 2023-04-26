@@ -5,8 +5,8 @@ go 1.20
 replace github.com/woocoos/entco => ../
 
 require (
-	entgo.io/contrib v0.4.1
-	entgo.io/ent v0.12.1
+	entgo.io/contrib v0.4.4
+	entgo.io/ent v0.12.2
 	github.com/99designs/gqlgen v0.17.5-0.20220428154617-9250f9ac1f90
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/mattn/go-sqlite3 v1.14.16

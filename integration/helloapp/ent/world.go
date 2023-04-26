@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -18,8 +19,12 @@ type World struct {
 	ID int `json:"id,omitempty"`
 	// TenantID holds the value of the "tenant_id" field.
 	TenantID int `json:"tenant_id,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt time.Time `json:"deleted_at,omitempty"`
 	// Name holds the value of the "name" field.
-	Name         string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
+	// PowerBy holds the value of the "power_by" field.
+	PowerBy      string `json:"power_by,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -30,8 +35,10 @@ func (*World) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case world.FieldID, world.FieldTenantID:
 			values[i] = new(sql.NullInt64)
-		case world.FieldName:
+		case world.FieldName, world.FieldPowerBy:
 			values[i] = new(sql.NullString)
+		case world.FieldDeletedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -59,11 +66,23 @@ func (w *World) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				w.TenantID = int(value.Int64)
 			}
+		case world.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				w.DeletedAt = value.Time
+			}
 		case world.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				w.Name = value.String
+			}
+		case world.FieldPowerBy:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field power_by", values[i])
+			} else if value.Valid {
+				w.PowerBy = value.String
 			}
 		default:
 			w.selectValues.Set(columns[i], values[i])
@@ -104,8 +123,14 @@ func (w *World) String() string {
 	builder.WriteString("tenant_id=")
 	builder.WriteString(fmt.Sprintf("%v", w.TenantID))
 	builder.WriteString(", ")
+	builder.WriteString("deleted_at=")
+	builder.WriteString(w.DeletedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(w.Name)
+	builder.WriteString(", ")
+	builder.WriteString("power_by=")
+	builder.WriteString(w.PowerBy)
 	builder.WriteByte(')')
 	return builder.String()
 }

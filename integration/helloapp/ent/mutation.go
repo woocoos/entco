@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -34,7 +35,9 @@ type WorldMutation struct {
 	id            *int
 	tenant_id     *int
 	addtenant_id  *int
+	deleted_at    *time.Time
 	name          *string
+	power_by      *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*World, error)
@@ -201,6 +204,55 @@ func (m *WorldMutation) ResetTenantID() {
 	m.addtenant_id = nil
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (m *WorldMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *WorldMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the World entity.
+// If the World object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorldMutation) OldDeletedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *WorldMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[world.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *WorldMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[world.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *WorldMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, world.FieldDeletedAt)
+}
+
 // SetName sets the "name" field.
 func (m *WorldMutation) SetName(s string) {
 	m.name = &s
@@ -237,6 +289,55 @@ func (m *WorldMutation) ResetName() {
 	m.name = nil
 }
 
+// SetPowerBy sets the "power_by" field.
+func (m *WorldMutation) SetPowerBy(s string) {
+	m.power_by = &s
+}
+
+// PowerBy returns the value of the "power_by" field in the mutation.
+func (m *WorldMutation) PowerBy() (r string, exists bool) {
+	v := m.power_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPowerBy returns the old "power_by" field's value of the World entity.
+// If the World object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorldMutation) OldPowerBy(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPowerBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPowerBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPowerBy: %w", err)
+	}
+	return oldValue.PowerBy, nil
+}
+
+// ClearPowerBy clears the value of the "power_by" field.
+func (m *WorldMutation) ClearPowerBy() {
+	m.power_by = nil
+	m.clearedFields[world.FieldPowerBy] = struct{}{}
+}
+
+// PowerByCleared returns if the "power_by" field was cleared in this mutation.
+func (m *WorldMutation) PowerByCleared() bool {
+	_, ok := m.clearedFields[world.FieldPowerBy]
+	return ok
+}
+
+// ResetPowerBy resets all changes to the "power_by" field.
+func (m *WorldMutation) ResetPowerBy() {
+	m.power_by = nil
+	delete(m.clearedFields, world.FieldPowerBy)
+}
+
 // Where appends a list predicates to the WorldMutation builder.
 func (m *WorldMutation) Where(ps ...predicate.World) {
 	m.predicates = append(m.predicates, ps...)
@@ -271,12 +372,18 @@ func (m *WorldMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WorldMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 4)
 	if m.tenant_id != nil {
 		fields = append(fields, world.FieldTenantID)
 	}
+	if m.deleted_at != nil {
+		fields = append(fields, world.FieldDeletedAt)
+	}
 	if m.name != nil {
 		fields = append(fields, world.FieldName)
+	}
+	if m.power_by != nil {
+		fields = append(fields, world.FieldPowerBy)
 	}
 	return fields
 }
@@ -288,8 +395,12 @@ func (m *WorldMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case world.FieldTenantID:
 		return m.TenantID()
+	case world.FieldDeletedAt:
+		return m.DeletedAt()
 	case world.FieldName:
 		return m.Name()
+	case world.FieldPowerBy:
+		return m.PowerBy()
 	}
 	return nil, false
 }
@@ -301,8 +412,12 @@ func (m *WorldMutation) OldField(ctx context.Context, name string) (ent.Value, e
 	switch name {
 	case world.FieldTenantID:
 		return m.OldTenantID(ctx)
+	case world.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
 	case world.FieldName:
 		return m.OldName(ctx)
+	case world.FieldPowerBy:
+		return m.OldPowerBy(ctx)
 	}
 	return nil, fmt.Errorf("unknown World field %s", name)
 }
@@ -319,12 +434,26 @@ func (m *WorldMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetTenantID(v)
 		return nil
+	case world.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
 	case world.FieldName:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case world.FieldPowerBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPowerBy(v)
 		return nil
 	}
 	return fmt.Errorf("unknown World field %s", name)
@@ -370,7 +499,14 @@ func (m *WorldMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *WorldMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(world.FieldDeletedAt) {
+		fields = append(fields, world.FieldDeletedAt)
+	}
+	if m.FieldCleared(world.FieldPowerBy) {
+		fields = append(fields, world.FieldPowerBy)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -383,6 +519,14 @@ func (m *WorldMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *WorldMutation) ClearField(name string) error {
+	switch name {
+	case world.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case world.FieldPowerBy:
+		m.ClearPowerBy()
+		return nil
+	}
 	return fmt.Errorf("unknown World nullable field %s", name)
 }
 
@@ -393,8 +537,14 @@ func (m *WorldMutation) ResetField(name string) error {
 	case world.FieldTenantID:
 		m.ResetTenantID()
 		return nil
+	case world.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
 	case world.FieldName:
 		m.ResetName()
+		return nil
+	case world.FieldPowerBy:
+		m.ResetPowerBy()
 		return nil
 	}
 	return fmt.Errorf("unknown World field %s", name)
