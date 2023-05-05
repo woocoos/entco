@@ -26,7 +26,7 @@ func (r *queryResolver) Users(ctx context.Context, after *entgql.Cursor[int], fi
 	if err != nil {
 		return nil, err
 	}
-	return r.client.User.Query().SimplePaginate(ctx, sp, after, first, before, last)
+	return r.client.User.Query().Paginate(ent.WithSimplePagination(ctx, sp), after, first, before, last)
 }
 
 // Query returns QueryResolver implementation.

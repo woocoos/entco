@@ -18,7 +18,9 @@ import (
     "strconv"
 )
 
-var simplePaginationKey = "github.com/woocoos/entco/pkg/ent.SimplePaginzation"
+var (
+	simplePaginationKey = "github.com/woocoos/entco/pkg/ent.SimplePaginzation"
+)
 
 type SimplePagination struct {
 	CurrentIndex int
@@ -26,48 +28,41 @@ type SimplePagination struct {
 }
 
 // NewSimplePagination creates a new SimplePagination from the given page and count. If both are empty, it returns nil.
-func NewSimplePagination(p, c string) (*SimplePagination, error) {
+func NewSimplePagination(p, c string) (sp *SimplePagination, err error) {
 	if p == "" && c == "" {
 		return nil, nil
 	}
-	sp := &SimplePagination{}
+	sp = &SimplePagination{}
 	if p != "" {
-		i, err := strconv.Atoi(p)
-		if err != nil {
+		if sp.PageIndex, err = strconv.Atoi(p);err != nil {
 			return nil, err
 		}
-		sp.PageIndex = i
 	}
 	if c != "" {
-		i, err := strconv.Atoi(c)
-		if err != nil {
+		if sp.CurrentIndex, err = strconv.Atoi(c);err != nil {
 			return nil, err
 		}
-		sp.CurrentIndex = i
 	}
 	return sp, nil
 }
 
-{{ range $node := $gqlNodes -}}
-    {{ $r := $node.Receiver -}}
-    {{ $query := print $node.QueryName -}}
-    {{ $names := nodePaginationNames $node -}}
-    {{ $name := $names.Node -}}
-    {{ $opt := print $name "PaginateOption" -}}
-    {{ $conn := $names.Connection -}}
-    func ({{ $r }} *{{ $query }}) SimplePaginate(
-        ctx context.Context,sp *SimplePagination,after *Cursor, first *int,
-        before *Cursor, last *int, opts ...{{ $opt }},
-    ) (*{{ $conn }}, error) {
-    {{- with extend $ "Node" $node "Query" $r -}}
-        {{ template "gql_pagination_simple/helper/paginate" . }}
-    {{- end -}}
-    }
-{{ end }}
+// SimplePaginationFromContext returns the SimplePagination from the given context.
+func SimplePaginationFromContext(ctx context.Context) (*SimplePagination, bool) {
+	sp, ok := ctx.Value(simplePaginationKey).(*SimplePagination)
+	return sp, ok
+}
+
+// WithSimplePagination returns a new context with the given SimplePagination.
+func WithSimplePagination(ctx context.Context, sp *SimplePagination) context.Context {
+	if sp == nil {
+		return ctx
+	}
+	return context.WithValue(ctx, simplePaginationKey, sp)
+}
 
 {{ end }}
 
-{{ define "gql_pagination_simple/helper/paginate" }}
+{{ define "gql_pagination/helper/paginate" }}
 	{{- $node := $.Scope.Node }}
 	{{- $r := $.Scope.Query }}
 	{{- $names := nodePaginationNames $node }}
@@ -104,21 +99,13 @@ func NewSimplePagination(p, c string) (*SimplePagination, error) {
 	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
 		return conn, nil
 	}
-
 	if {{ $r }}, err = pager.applyCursors({{ $r }}, after, before); err != nil {
 		return nil, err
 	}
-	{{ $r }} = pager.applyOrder({{ $r }})
 	if limit := paginateLimit(first, last); limit != 0 {
 		{{ $r }}.Limit(limit)
 	}
-	if field := collectedField(ctx, edgesField, nodeField); field != nil {
-		if err := {{ $r }}.collectField(ctx, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
-			return nil, err
-		}
-	}
-
-    if sp!= nil {
+	if sp,ok := SimplePaginationFromContext(ctx);ok {
         if first != nil {
             {{ $r }}.Offset((sp.PageIndex - sp.CurrentIndex - 1) * *first)
         }
@@ -126,6 +113,12 @@ func NewSimplePagination(p, c string) (*SimplePagination, error) {
             {{ $r }}.Offset((sp.CurrentIndex - sp.PageIndex - 1) * *last)
         }
     }
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := {{ $r }}.collectField(ctx, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	{{ $r }} = pager.applyOrder({{ $r }})
 	nodes, err := {{ $r }}.All(ctx)
 	if err != nil {
 		return nil, err
