@@ -237,7 +237,6 @@ func ({{ $receiver }} *{{ $query }}) collectField(ctx context.Context, opCtx *gr
 									return err
 								}
 							}
-
 							if limit := paginateLimit(args.first, args.last); limit > 0 {
 								{{- $fk := print $node.Package "." $fc.Edge.ColumnConstant }}
 								{{- if $e.M2M }}
