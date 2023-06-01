@@ -103,6 +103,6 @@ func (d SoftDeleteMixin[T, Q]) Hooks() []ent.Hook {
 // P adds a storage-level predicate to the queries and mutations.
 func (d SoftDeleteMixin[T, Q]) P(w Query) {
 	w.WhereP(
-		sql.FieldIsNull(d.Fields()[0].Descriptor().Name),
+		sql.FieldIsNull("deleted_at"),
 	)
 }

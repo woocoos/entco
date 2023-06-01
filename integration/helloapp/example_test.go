@@ -2,6 +2,7 @@ package helloapp
 
 import (
 	"context"
+	"github.com/golang-jwt/jwt/v4"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -68,6 +69,9 @@ func Test_CreateWorld(t *testing.T) {
 	}
 
 	tctx := identity.WithTenantID(ctx, 1)
+	tctx = security.WithContext(tctx, security.NewGenericPrincipalByClaims(jwt.MapClaims{
+		"sub": "1",
+	}))
 	if err := client.World.Create().SetName("woocoo").SetTenantID(1).Exec(tctx); err != nil {
 		t.Fatal("expect tenant creation to succeed, but got:", err)
 	}
@@ -139,6 +143,7 @@ func Test_SoftDelete(t *testing.T) {
 
 	tid := rand.Int()
 	tctx := identity.WithTenantID(ctx, tid)
+	tctx = security.WithContext(tctx, security.NewGenericPrincipalByClaims(map[string]interface{}{"sub": "1"}))
 	id := rand.Int()
 	if err := client.World.Create().SetName("woocoo").SetTenantID(tid).SetID(id).Exec(tctx); err != nil {
 		t.Fatal("expect tenant creation to succeed, but got:", err)

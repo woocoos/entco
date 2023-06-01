@@ -40,13 +40,23 @@ func SimplePagination() entc.Option {
 // add it to entgql.WithSchemaHook()
 func ChangeRelayNodeType() entgql.SchemaHook {
 	idType := ast.NonNullNamedType("GID", nil)
+	found := false
 	return func(graph *gen.Graph, schema *ast.Schema) error {
 		for _, field := range schema.Types["Query"].Fields {
 			if field.Name == "node" {
 				field.Arguments[0].Type = idType
+				found = true
 			}
 			if field.Name == "nodes" {
 				field.Arguments[0].Type = ast.NonNullListType(idType, nil)
+				found = true
+			}
+		}
+		if found && schema.Types["GID"] == nil {
+			schema.Types["GID"] = &ast.Definition{
+				Kind:        ast.Scalar,
+				Name:        "GID",
+				Description: "An object with an Global ID,for using in Noder interface.",
 			}
 		}
 		return nil

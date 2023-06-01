@@ -8,5 +8,8 @@ resolver:
 
 autobind:
   - github.com/woocoos/entco/integration/gentest/ent
-
+models:
+  Duration:
+    model:
+      - github.com/woocoos/entco/schemax/typex.Duration
 skip_mod_tidy: true

@@ -142,7 +142,9 @@ func (d TenantMixin[T, Q]) QueryRulesP(ctx context.Context, w Query) error {
 
 	w.WhereP(func(selector *sql.Selector) {
 		rules := GetTenantRules(flts, tidstr, selector)
-		selector.Where(sql.Or(rules...))
+		if len(rules) > 0 {
+			selector.Where(sql.Or(rules...))
+		}
 	})
 	return nil
 }

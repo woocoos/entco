@@ -16,6 +16,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/errcode"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
+	"github.com/woocoos/entco/pkg/pagination"
 )
 
 // Common entgql types.
@@ -289,7 +290,7 @@ func (u *UserQuery) Paginate(
 	if limit := paginateLimit(first, last); limit != 0 {
 		u.Limit(limit)
 	}
-	if sp, ok := SimplePaginationFromContext(ctx); ok {
+	if sp, ok := pagination.SimplePaginationFromContext(ctx); ok {
 		if first != nil {
 			u.Offset((sp.PageIndex - sp.CurrentIndex - 1) * *first)
 		}

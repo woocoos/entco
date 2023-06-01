@@ -1,5 +1,3 @@
-//go:build ignore
-
 package main
 
 import (
@@ -15,8 +13,8 @@ func main() {
 	ex, err := entgql.NewExtension(
 		entgql.WithSchemaGenerator(),
 		entgql.WithWhereInputs(true),
-		entgql.WithConfigPath("./gqlgen.yml"),
-		entgql.WithSchemaPath("./ent.graphql"),
+		entgql.WithConfigPath("gentest/gqlgen.yml"),
+		entgql.WithSchemaPath("gentest/ent.graphql"),
 		entgql.WithSchemaHook(genx.ChangeRelayNodeType()),
 	)
 	if err != nil {
@@ -26,7 +24,10 @@ func main() {
 		entc.Extensions(ex),
 		genx.SimplePagination(),
 	}
-	err = entc.Generate("./ent/schema", &gen.Config{},
+	err = entc.Generate("./gentest/ent/schema", &gen.Config{
+		Package: "github.com/woocoos/entco/integration/gentest/ent",
+		Target:  "./gentest/ent",
+	},
 		opts...)
 	if err != nil {
 		log.Fatalf("running ent codegen: %v", err)

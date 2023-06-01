@@ -81,7 +81,7 @@ func (wu *WorldUpdate) Mutation() *WorldMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (wu *WorldUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks[int, WorldMutation](ctx, wu.sqlSave, wu.mutation, wu.hooks)
+	return withHooks(ctx, wu.sqlSave, wu.mutation, wu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -216,7 +216,7 @@ func (wuo *WorldUpdateOne) Select(field string, fields ...string) *WorldUpdateOn
 
 // Save executes the query and returns the updated World entity.
 func (wuo *WorldUpdateOne) Save(ctx context.Context) (*World, error) {
-	return withHooks[*World, WorldMutation](ctx, wuo.sqlSave, wuo.mutation, wuo.hooks)
+	return withHooks(ctx, wuo.sqlSave, wuo.mutation, wuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

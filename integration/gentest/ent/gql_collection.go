@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
+	"github.com/woocoos/entco/pkg/pagination"
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
@@ -157,7 +158,16 @@ func unmarshalArgs(ctx context.Context, whereInput any, args map[string]any) map
 	return args
 }
 
-func limitRows(partitionBy string, limit int, orderBy ...sql.Querier) func(s *sql.Selector) {
+func limitRows(ctx context.Context, partitionBy string, limit int, first, last *int, orderBy ...sql.Querier) func(s *sql.Selector) {
+	offset := 0
+	if sp, ok := pagination.SimplePaginationFromContext(ctx); ok {
+		if first != nil {
+			offset = (sp.PageIndex - sp.CurrentIndex - 1) * *first
+		}
+		if last != nil {
+			offset = (sp.CurrentIndex - sp.PageIndex - 1) * *last
+		}
+	}
 	return func(s *sql.Selector) {
 		d := sql.Dialect(s.Dialect())
 		s.SetDistinct(false)
@@ -173,10 +183,17 @@ func limitRows(partitionBy string, limit int, orderBy ...sql.Querier) func(s *sq
 					From(d.Table("src_query")),
 			)
 		t := d.Table("limited_query").As(s.TableName())
-		*s = *d.Select(s.UnqualifiedColumns()...).
-			From(t).
-			Where(sql.LTE(t.C("row_number"), limit)).
-			Prefix(with)
+		if offset != 0 {
+			*s = *d.Select(s.UnqualifiedColumns()...).
+				From(t).
+				Where(sql.GT(t.C("row_number"), offset)).Limit(limit).
+				Prefix(with)
+		} else {
+			*s = *d.Select(s.UnqualifiedColumns()...).
+				From(t).
+				Where(sql.LTE(t.C("row_number"), limit)).
+				Prefix(with)
+		}
 	}
 }
 

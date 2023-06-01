@@ -27,7 +27,7 @@ func (wd *WorldDelete) Where(ps ...predicate.World) *WorldDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (wd *WorldDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, WorldMutation](ctx, wd.sqlExec, wd.mutation, wd.hooks)
+	return withHooks(ctx, wd.sqlExec, wd.mutation, wd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

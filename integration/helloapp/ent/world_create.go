@@ -76,7 +76,7 @@ func (wc *WorldCreate) Save(ctx context.Context) (*World, error) {
 	if err := wc.defaults(); err != nil {
 		return nil, err
 	}
-	return withHooks[*World, WorldMutation](ctx, wc.sqlSave, wc.mutation, wc.hooks)
+	return withHooks(ctx, wc.sqlSave, wc.mutation, wc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.

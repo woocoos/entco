@@ -5,6 +5,8 @@ Define a Relay Cursor type:
 https://relay.dev/graphql/connections.htm#sec-Cursor
 """
 scalar Cursor
+"""An object with an Global ID,for using in Noder interface."""
+scalar GID
 """
 An object with an ID.
 Follows the [Relay Global Object Identification Specification](https://relay.dev/graphql/objectidentification.htm)
@@ -38,12 +40,12 @@ type Query {
   """Fetches an object given its ID."""
   node(
     """ID of the object."""
-    id: ID!
+    id: GID!
   ): Node
   """Lookup nodes by a list of IDs."""
   nodes(
     """The list of node IDs."""
-    ids: [ID!]!
+    ids: [GID!]!
   ): [Node]!
   users(
     """Returns the elements in the list that come after the specified cursor."""
