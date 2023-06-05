@@ -15,7 +15,7 @@ func TestTenantIDMiddleware(t *testing.T) {
 		router := gin.New()
 		router.Use(TenantIDMiddleware(conf.New()))
 		router.GET("/test", func(c *gin.Context) {
-			tid, err := TenantIDFromContext[int](c)
+			tid, err := TenantIDFromContext(c)
 			assert.NoError(t, err)
 			assert.Equal(t, 1, tid)
 			c.String(200, "test")
@@ -33,7 +33,7 @@ func TestTenantIDMiddleware(t *testing.T) {
 		router.GET("/test", func(c *gin.Context) {
 			ctx := context.WithValue(c.Request.Context(), gin.ContextKey, c)
 			func(ctx2 context.Context) {
-				tid, err := TenantIDFromContext[int](ctx2)
+				tid, err := TenantIDFromContext(ctx2)
 				assert.NoError(t, err)
 				assert.Equal(t, 1, tid)
 			}(ctx)
@@ -49,7 +49,7 @@ func TestTenantIDMiddleware(t *testing.T) {
 		router := gin.New()
 		router.Use(TenantIDMiddleware(conf.New()))
 		router.GET("/test", func(c *gin.Context) {
-			tid, err := TenantIDFromContext[int](c)
+			tid, err := TenantIDFromContext(c)
 			assert.Error(t, err)
 			assert.Equal(t, 1, tid)
 			c.String(200, "test")
@@ -67,7 +67,7 @@ func TestTenantIDMiddleware(t *testing.T) {
 			"rootDomain": "woocoo.com",
 		})))
 		router.GET("/test", func(c *gin.Context) {
-			tid, err := TenantIDFromContext[int](c)
+			tid, err := TenantIDFromContext(c)
 			assert.NoError(t, err)
 			assert.Equal(t, 1, tid)
 			c.String(200, "test")

@@ -40,7 +40,7 @@ func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 		default:
 			extr, err := handler.CreateExtractors(opts.Lookup, "")
 			if err != nil {
-				c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid tenant id %v", err))
+				handler.AbortWithError(c, http.StatusBadRequest, fmt.Errorf("invalid tenant id %v", err))
 				return
 			}
 			for _, extractor := range extr {
@@ -53,7 +53,7 @@ func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 		}
 		v, err := strconv.Atoi(tid)
 		if err != nil {
-			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid tenant id %s:%v", tid, err))
+			handler.AbortWithError(c, http.StatusBadRequest, fmt.Errorf("invalid tenant id %s:%v", tid, err))
 			return
 		}
 		c.Set(tenantContextKey, v)
