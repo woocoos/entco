@@ -3,19 +3,19 @@ module github.com/woocoos/entco
 go 1.20
 
 require (
-	ariga.io/entcache v0.1.1-0.20230414114609-164fed2e1c70
+	ariga.io/entcache v0.1.1-0.20230620164151-0eb723a11c40
 	entgo.io/contrib v0.4.5
 	entgo.io/ent v0.12.3
 	github.com/99designs/gqlgen v0.17.31
 	github.com/XSAM/otelsql v0.22.0
 	github.com/bwmarrin/snowflake v0.3.0
-	github.com/casbin/casbin/v2 v2.68.0
+	github.com/casbin/casbin/v2 v2.71.1
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/stretchr/testify v1.8.3
-	github.com/tsingsun/woocoo v0.2.7
-	github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230605013745-3abb7df5c016
+	github.com/tsingsun/woocoo v0.0.0-20230622090725-3f1aa9ca4b02
+	github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230622101920-afee0284db7d
 	github.com/vektah/gqlparser/v2 v2.5.1
 	github.com/woocoos/casbin-ent-adapter v0.0.0-20230404005858-cd33f1b0b92e
 	go.opentelemetry.io/otel v1.15.0
@@ -42,7 +42,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
-	github.com/go-redis/redis/v8 v8.11.5 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
@@ -54,7 +53,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
 	github.com/jhump/protoreflect v1.10.1 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.16.5 // indirect
+	github.com/klauspost/compress v1.16.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
 	github.com/knadh/koanf/maps v0.1.1 // indirect
 	github.com/knadh/koanf/parsers/yaml v0.1.0 // indirect
@@ -73,7 +72,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/redis/go-redis/v9 v9.0.4 // indirect
+	github.com/redis/go-redis/v9 v9.0.5 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect

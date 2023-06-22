@@ -19,6 +19,8 @@ var (
 type TenantOptions struct {
 	Lookup     string
 	RootDomain string
+	Exclude    []string
+	Skipper    handler.Skipper
 }
 
 // TenantIDMiddleware returns a middleware to get tenant id from http request
@@ -29,7 +31,15 @@ func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 	if err := cfg.Unmarshal(&opts); err != nil {
 		panic(err)
 	}
+	if opts.Skipper == nil {
+		opts.Skipper = func(c *gin.Context) bool {
+			return handler.PathSkip(opts.Exclude, c.Request.URL)
+		}
+	}
 	return func(c *gin.Context) {
+		if opts.Skipper(c) {
+			return
+		}
 		tid := ""
 		switch opts.Lookup {
 		case "host":

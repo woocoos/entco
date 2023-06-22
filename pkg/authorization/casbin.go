@@ -46,14 +46,14 @@ func GetAllowedObjectConditions(user string, action string, prefix string, domai
 		// policy {sub, domain, obj, act}
 		if policy[3] == action {
 			if !strings.HasPrefix(policy[2], prefix) {
-				return nil, casbinerr.ERR_OBJ_CONDITION
+				return nil, casbinerr.ErrObjCondition
 			}
 			objectConditions = append(objectConditions, strings.TrimPrefix(policy[2], prefix))
 		}
 	}
 
 	if len(objectConditions) == 0 {
-		return nil, casbinerr.ERR_EMPTY_CONDITION
+		return nil, casbinerr.ErrEmptyCondition
 	}
 
 	return objectConditions, nil

@@ -136,7 +136,7 @@ func (d TenantMixin[T, Q]) QueryRulesP(ctx context.Context, w Query) error {
 	uidstr := strconv.Itoa(uid)
 	prefix := authorization.FormatArnPrefix(conf.Global().AppName(), tidstr, typ)
 	flts, err := authorization.GetAllowedObjectConditions(uidstr, "read", prefix, tidstr)
-	if err != nil && !errors.Is(err, casbinerr.ERR_EMPTY_CONDITION) {
+	if err != nil && !errors.Is(err, casbinerr.ErrEmptyCondition) {
 		return err
 	}
 
