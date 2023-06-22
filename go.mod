@@ -7,7 +7,7 @@ require (
 	entgo.io/contrib v0.4.5
 	entgo.io/ent v0.12.3
 	github.com/99designs/gqlgen v0.17.31
-	github.com/XSAM/otelsql v0.22.0
+	github.com/XSAM/otelsql v0.23.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/casbin/casbin/v2 v2.71.1
 	github.com/gin-gonic/gin v1.9.1
@@ -18,7 +18,7 @@ require (
 	github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230622101920-afee0284db7d
 	github.com/vektah/gqlparser/v2 v2.5.1
 	github.com/woocoos/casbin-ent-adapter v0.0.0-20230404005858-cd33f1b0b92e
-	go.opentelemetry.io/otel v1.15.0
+	go.opentelemetry.io/otel v1.16.0
 )
 
 require (
@@ -78,8 +78,8 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
-	go.opentelemetry.io/otel/metric v0.38.0 // indirect
-	go.opentelemetry.io/otel/trace v1.15.0 // indirect
+	go.opentelemetry.io/otel/metric v1.16.0 // indirect
+	go.opentelemetry.io/otel/trace v1.16.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
