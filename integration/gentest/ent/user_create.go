@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/shopspring/decimal"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
 )
 
@@ -36,6 +37,20 @@ func (uc *UserCreate) SetCreatedAt(t time.Time) *UserCreate {
 func (uc *UserCreate) SetNillableCreatedAt(t *time.Time) *UserCreate {
 	if t != nil {
 		uc.SetCreatedAt(*t)
+	}
+	return uc
+}
+
+// SetMoney sets the "money" field.
+func (uc *UserCreate) SetMoney(d decimal.Decimal) *UserCreate {
+	uc.mutation.SetMoney(d)
+	return uc
+}
+
+// SetNillableMoney sets the "money" field if the given value is not nil.
+func (uc *UserCreate) SetNillableMoney(d *decimal.Decimal) *UserCreate {
+	if d != nil {
+		uc.SetMoney(*d)
 	}
 	return uc
 }
@@ -94,6 +109,11 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
 	}
+	if v, ok := uc.mutation.Money(); ok {
+		if err := user.MoneyValidator(v.String()); err != nil {
+			return &ValidationError{Name: "money", err: fmt.Errorf(`ent: validator failed for field "User.money": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -127,6 +147,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.CreatedAt(); ok {
 		_spec.SetField(user.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
+	}
+	if value, ok := uc.mutation.Money(); ok {
+		_spec.SetField(user.FieldMoney, field.TypeString, value)
+		_node.Money = &value
 	}
 	return _node, _spec
 }

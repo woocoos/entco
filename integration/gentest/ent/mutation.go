@@ -11,6 +11,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/shopspring/decimal"
 	"github.com/woocoos/entco/integration/gentest/ent/predicate"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
 )
@@ -35,6 +36,7 @@ type UserMutation struct {
 	id            *int
 	name          *string
 	created_at    *time.Time
+	money         *decimal.Decimal
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*User, error)
@@ -211,6 +213,55 @@ func (m *UserMutation) ResetCreatedAt() {
 	m.created_at = nil
 }
 
+// SetMoney sets the "money" field.
+func (m *UserMutation) SetMoney(d decimal.Decimal) {
+	m.money = &d
+}
+
+// Money returns the value of the "money" field in the mutation.
+func (m *UserMutation) Money() (r decimal.Decimal, exists bool) {
+	v := m.money
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMoney returns the old "money" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldMoney(ctx context.Context) (v *decimal.Decimal, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMoney is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMoney requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMoney: %w", err)
+	}
+	return oldValue.Money, nil
+}
+
+// ClearMoney clears the value of the "money" field.
+func (m *UserMutation) ClearMoney() {
+	m.money = nil
+	m.clearedFields[user.FieldMoney] = struct{}{}
+}
+
+// MoneyCleared returns if the "money" field was cleared in this mutation.
+func (m *UserMutation) MoneyCleared() bool {
+	_, ok := m.clearedFields[user.FieldMoney]
+	return ok
+}
+
+// ResetMoney resets all changes to the "money" field.
+func (m *UserMutation) ResetMoney() {
+	m.money = nil
+	delete(m.clearedFields, user.FieldMoney)
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -245,12 +296,15 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 3)
 	if m.name != nil {
 		fields = append(fields, user.FieldName)
 	}
 	if m.created_at != nil {
 		fields = append(fields, user.FieldCreatedAt)
+	}
+	if m.money != nil {
+		fields = append(fields, user.FieldMoney)
 	}
 	return fields
 }
@@ -264,6 +318,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case user.FieldCreatedAt:
 		return m.CreatedAt()
+	case user.FieldMoney:
+		return m.Money()
 	}
 	return nil, false
 }
@@ -277,6 +333,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case user.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
+	case user.FieldMoney:
+		return m.OldMoney(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -299,6 +357,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
+		return nil
+	case user.FieldMoney:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMoney(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -329,7 +394,11 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(user.FieldMoney) {
+		fields = append(fields, user.FieldMoney)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -342,6 +411,11 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
+	switch name {
+	case user.FieldMoney:
+		m.ClearMoney()
+		return nil
+	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
 
@@ -354,6 +428,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldCreatedAt:
 		m.ResetCreatedAt()
+		return nil
+	case user.FieldMoney:
+		m.ResetMoney()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

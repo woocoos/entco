@@ -2,13 +2,17 @@ package gentest
 
 import (
 	"context"
+	"encoding/json"
 	"entgo.io/ent/dialect/sql"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
 	"github.com/tsingsun/woocoo/pkg/gds"
 	"github.com/woocoos/entco/integration/gentest/ent"
 	"net/http/httptest"
 	"strconv"
+	"strings"
 	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -80,4 +84,40 @@ func (s *TestSuite) TestUsers_SimplePagination() {
 		s.Equal(2, users.Edges[1].Node.ID)
 	})
 
+}
+
+func (s *TestSuite) TestUser_Create() {
+	srv := handler.New(NewSchema(s.client))
+	srv.AddTransport(transport.POST{})
+	s.Run("normal", func() {
+		w := httptest.NewRecorder()
+		bd := strings.NewReader("{\"query\":\"mutation {\\n    createUser(name:\\\"test\\\",money: 11.123){\\n      name,money\\n  }\\n}\",\"variables\":{}}")
+		r := httptest.NewRequest("POST", "/graphql/query", bd)
+		r.Header.Set("Content-Type", "application/json")
+		srv.ServeHTTP(w, r)
+		s.Require().Equal(200, w.Code)
+		var ret struct {
+			Data struct {
+				CreateUser ent.User
+			}
+		}
+		s.Require().NoError(json.Unmarshal(w.Body.Bytes(), &ret))
+		s.Require().Equal("test", ret.Data.CreateUser.Name)
+		s.Require().Equal(11.123, ret.Data.CreateUser.Money.InexactFloat64())
+	})
+	s.Run("validate", func() {
+		w := httptest.NewRecorder()
+		bd := strings.NewReader("{\"query\":\"mutation {\\n    createUser(name:\\\"test\\\",money: 0.1123){\\n      name,money\\n  }\\n}\",\"variables\":{}}")
+		r := httptest.NewRequest("POST", "/graphql/query", bd)
+		r.Header.Set("Content-Type", "application/json")
+		srv.ServeHTTP(w, r)
+		s.Require().Equal(200, w.Code)
+		var ret struct {
+			Errors []struct {
+				Message string
+			}
+		}
+		s.Require().NoError(json.Unmarshal(w.Body.Bytes(), &ret))
+		s.Require().Contains(ret.Errors[0].Message, "value out of range")
+	})
 }

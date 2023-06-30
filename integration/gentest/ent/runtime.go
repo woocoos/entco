@@ -23,4 +23,8 @@ func init() {
 	userDescCreatedAt := userFields[1].Descriptor()
 	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
+	// userDescMoney is the schema descriptor for money field.
+	userDescMoney := userFields[2].Descriptor()
+	// user.MoneyValidator is a validator for the "money" field. It is called by the builders before save.
+	user.MoneyValidator = userDescMoney.Validators[0].(func(string) error)
 }

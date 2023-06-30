@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/shopspring/decimal"
 	"github.com/woocoos/entco/integration/gentest/ent/predicate"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
 )
@@ -52,6 +53,23 @@ type UserWhereInput struct {
 	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
 	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
 	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "money" field predicates.
+	Money             *decimal.Decimal  `json:"money,omitempty"`
+	MoneyNEQ          *decimal.Decimal  `json:"moneyNEQ,omitempty"`
+	MoneyIn           []decimal.Decimal `json:"moneyIn,omitempty"`
+	MoneyNotIn        []decimal.Decimal `json:"moneyNotIn,omitempty"`
+	MoneyGT           *decimal.Decimal  `json:"moneyGT,omitempty"`
+	MoneyGTE          *decimal.Decimal  `json:"moneyGTE,omitempty"`
+	MoneyLT           *decimal.Decimal  `json:"moneyLT,omitempty"`
+	MoneyLTE          *decimal.Decimal  `json:"moneyLTE,omitempty"`
+	MoneyContains     *decimal.Decimal  `json:"moneyContains,omitempty"`
+	MoneyHasPrefix    *decimal.Decimal  `json:"moneyHasPrefix,omitempty"`
+	MoneyHasSuffix    *decimal.Decimal  `json:"moneyHasSuffix,omitempty"`
+	MoneyIsNil        bool              `json:"moneyIsNil,omitempty"`
+	MoneyNotNil       bool              `json:"moneyNotNil,omitempty"`
+	MoneyEqualFold    *decimal.Decimal  `json:"moneyEqualFold,omitempty"`
+	MoneyContainsFold *decimal.Decimal  `json:"moneyContainsFold,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -211,6 +229,51 @@ func (i *UserWhereInput) P() (predicate.User, error) {
 	}
 	if i.CreatedAtLTE != nil {
 		predicates = append(predicates, user.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.Money != nil {
+		predicates = append(predicates, user.MoneyEQ(*i.Money))
+	}
+	if i.MoneyNEQ != nil {
+		predicates = append(predicates, user.MoneyNEQ(*i.MoneyNEQ))
+	}
+	if len(i.MoneyIn) > 0 {
+		predicates = append(predicates, user.MoneyIn(i.MoneyIn...))
+	}
+	if len(i.MoneyNotIn) > 0 {
+		predicates = append(predicates, user.MoneyNotIn(i.MoneyNotIn...))
+	}
+	if i.MoneyGT != nil {
+		predicates = append(predicates, user.MoneyGT(*i.MoneyGT))
+	}
+	if i.MoneyGTE != nil {
+		predicates = append(predicates, user.MoneyGTE(*i.MoneyGTE))
+	}
+	if i.MoneyLT != nil {
+		predicates = append(predicates, user.MoneyLT(*i.MoneyLT))
+	}
+	if i.MoneyLTE != nil {
+		predicates = append(predicates, user.MoneyLTE(*i.MoneyLTE))
+	}
+	if i.MoneyContains != nil {
+		predicates = append(predicates, user.MoneyContains(*i.MoneyContains))
+	}
+	if i.MoneyHasPrefix != nil {
+		predicates = append(predicates, user.MoneyHasPrefix(*i.MoneyHasPrefix))
+	}
+	if i.MoneyHasSuffix != nil {
+		predicates = append(predicates, user.MoneyHasSuffix(*i.MoneyHasSuffix))
+	}
+	if i.MoneyIsNil {
+		predicates = append(predicates, user.MoneyIsNil())
+	}
+	if i.MoneyNotNil {
+		predicates = append(predicates, user.MoneyNotNil())
+	}
+	if i.MoneyEqualFold != nil {
+		predicates = append(predicates, user.MoneyEqualFold(*i.MoneyEqualFold))
+	}
+	if i.MoneyContainsFold != nil {
+		predicates = append(predicates, user.MoneyContainsFold(*i.MoneyContainsFold))
 	}
 
 	switch len(predicates) {

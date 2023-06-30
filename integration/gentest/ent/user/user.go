@@ -17,6 +17,8 @@ const (
 	FieldName = "name"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// FieldMoney holds the string denoting the money field in the database.
+	FieldMoney = "money"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 )
@@ -26,6 +28,7 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldCreatedAt,
+	FieldMoney,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -43,6 +46,8 @@ var (
 	NameValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// MoneyValidator is a validator for the "money" field. It is called by the builders before save.
+	MoneyValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the User queries.
@@ -61,4 +66,9 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByCreatedAt orders the results by the created_at field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByMoney orders the results by the money field.
+func ByMoney(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMoney, opts...).ToFunc()
 }

@@ -23,8 +23,10 @@ type Noder interface {
 	IsNode()
 }
 
+var userImplementors = []string{"User", "Node"}
+
 // IsNode implements the Node interface check for GQLGen.
-func (n *User) IsNode() {}
+func (*User) IsNode() {}
 
 var errNodeInvalidID = &NotFoundError{"node"}
 
@@ -87,7 +89,7 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 	case user.Table:
 		query := c.User.Query().
 			Where(user.ID(id))
-		query, err := query.CollectFields(ctx, "User")
+		query, err := query.CollectFields(ctx, userImplementors...)
 		if err != nil {
 			return nil, err
 		}
@@ -172,7 +174,7 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 	case user.Table:
 		query := c.User.Query().
 			Where(user.IDIn(ids...))
-		query, err := query.CollectFields(ctx, "User")
+		query, err := query.CollectFields(ctx, userImplementors...)
 		if err != nil {
 			return nil, err
 		}

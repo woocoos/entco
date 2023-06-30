@@ -6,6 +6,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
+	"github.com/shopspring/decimal"
+	"github.com/woocoos/entco/schemax/fieldx"
 	"time"
 )
 
@@ -19,6 +21,7 @@ func (User) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.QueryField("users"),
 		entgql.RelayConnection(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }
 
@@ -29,6 +32,9 @@ func (User) Fields() []ent.Field {
 		field.Time("created_at").Immutable().Default(time.Now).Immutable().
 			Annotations(entgql.OrderField("createdAt"), entgql.Skip(entgql.SkipMutationCreateInput),
 				entproto.Field(3)),
+		fieldx.Decimal("money").Precision(10, 6).Optional().
+			Range(decimal.NewFromInt(1), decimal.NewFromInt(100000)).
+			Comment("money").Nillable(),
 	}
 }
 

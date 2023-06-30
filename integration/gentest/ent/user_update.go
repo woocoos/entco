@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/shopspring/decimal"
 	"github.com/woocoos/entco/integration/gentest/ent/predicate"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
 )
@@ -30,6 +31,26 @@ func (uu *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 // SetName sets the "name" field.
 func (uu *UserUpdate) SetName(s string) *UserUpdate {
 	uu.mutation.SetName(s)
+	return uu
+}
+
+// SetMoney sets the "money" field.
+func (uu *UserUpdate) SetMoney(d decimal.Decimal) *UserUpdate {
+	uu.mutation.SetMoney(d)
+	return uu
+}
+
+// SetNillableMoney sets the "money" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableMoney(d *decimal.Decimal) *UserUpdate {
+	if d != nil {
+		uu.SetMoney(*d)
+	}
+	return uu
+}
+
+// ClearMoney clears the value of the "money" field.
+func (uu *UserUpdate) ClearMoney() *UserUpdate {
+	uu.mutation.ClearMoney()
 	return uu
 }
 
@@ -72,6 +93,11 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
 		}
 	}
+	if v, ok := uu.mutation.Money(); ok {
+		if err := user.MoneyValidator(v.String()); err != nil {
+			return &ValidationError{Name: "money", err: fmt.Errorf(`ent: validator failed for field "User.money": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -89,6 +115,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
+	}
+	if value, ok := uu.mutation.Money(); ok {
+		_spec.SetField(user.FieldMoney, field.TypeString, value)
+	}
+	if uu.mutation.MoneyCleared() {
+		_spec.ClearField(user.FieldMoney, field.TypeString)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -113,6 +145,26 @@ type UserUpdateOne struct {
 // SetName sets the "name" field.
 func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
 	uuo.mutation.SetName(s)
+	return uuo
+}
+
+// SetMoney sets the "money" field.
+func (uuo *UserUpdateOne) SetMoney(d decimal.Decimal) *UserUpdateOne {
+	uuo.mutation.SetMoney(d)
+	return uuo
+}
+
+// SetNillableMoney sets the "money" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableMoney(d *decimal.Decimal) *UserUpdateOne {
+	if d != nil {
+		uuo.SetMoney(*d)
+	}
+	return uuo
+}
+
+// ClearMoney clears the value of the "money" field.
+func (uuo *UserUpdateOne) ClearMoney() *UserUpdateOne {
+	uuo.mutation.ClearMoney()
 	return uuo
 }
 
@@ -168,6 +220,11 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
 		}
 	}
+	if v, ok := uuo.mutation.Money(); ok {
+		if err := user.MoneyValidator(v.String()); err != nil {
+			return &ValidationError{Name: "money", err: fmt.Errorf(`ent: validator failed for field "User.money": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -202,6 +259,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Name(); ok {
 		_spec.SetField(user.FieldName, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.Money(); ok {
+		_spec.SetField(user.FieldMoney, field.TypeString, value)
+	}
+	if uuo.mutation.MoneyCleared() {
+		_spec.ClearField(user.FieldMoney, field.TypeString)
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues

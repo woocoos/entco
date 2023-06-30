@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/shopspring/decimal"
 	"github.com/woocoos/entco/integration/gentest/ent/predicate"
 )
 
@@ -62,6 +63,11 @@ func Name(v string) predicate.User {
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldCreatedAt, v))
+}
+
+// Money applies equality check predicate on the "money" field. It's identical to MoneyEQ.
+func Money(v decimal.Decimal) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldMoney, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -167,6 +173,86 @@ func CreatedAtLT(v time.Time) predicate.User {
 // CreatedAtLTE applies the LTE predicate on the "created_at" field.
 func CreatedAtLTE(v time.Time) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldCreatedAt, v))
+}
+
+// MoneyEQ applies the EQ predicate on the "money" field.
+func MoneyEQ(v decimal.Decimal) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldMoney, v))
+}
+
+// MoneyNEQ applies the NEQ predicate on the "money" field.
+func MoneyNEQ(v decimal.Decimal) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldMoney, v))
+}
+
+// MoneyIn applies the In predicate on the "money" field.
+func MoneyIn(vs ...decimal.Decimal) predicate.User {
+	return predicate.User(sql.FieldIn(FieldMoney, vs...))
+}
+
+// MoneyNotIn applies the NotIn predicate on the "money" field.
+func MoneyNotIn(vs ...decimal.Decimal) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldMoney, vs...))
+}
+
+// MoneyGT applies the GT predicate on the "money" field.
+func MoneyGT(v decimal.Decimal) predicate.User {
+	return predicate.User(sql.FieldGT(FieldMoney, v))
+}
+
+// MoneyGTE applies the GTE predicate on the "money" field.
+func MoneyGTE(v decimal.Decimal) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldMoney, v))
+}
+
+// MoneyLT applies the LT predicate on the "money" field.
+func MoneyLT(v decimal.Decimal) predicate.User {
+	return predicate.User(sql.FieldLT(FieldMoney, v))
+}
+
+// MoneyLTE applies the LTE predicate on the "money" field.
+func MoneyLTE(v decimal.Decimal) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldMoney, v))
+}
+
+// MoneyContains applies the Contains predicate on the "money" field.
+func MoneyContains(v decimal.Decimal) predicate.User {
+	vc := v.String()
+	return predicate.User(sql.FieldContains(FieldMoney, vc))
+}
+
+// MoneyHasPrefix applies the HasPrefix predicate on the "money" field.
+func MoneyHasPrefix(v decimal.Decimal) predicate.User {
+	vc := v.String()
+	return predicate.User(sql.FieldHasPrefix(FieldMoney, vc))
+}
+
+// MoneyHasSuffix applies the HasSuffix predicate on the "money" field.
+func MoneyHasSuffix(v decimal.Decimal) predicate.User {
+	vc := v.String()
+	return predicate.User(sql.FieldHasSuffix(FieldMoney, vc))
+}
+
+// MoneyIsNil applies the IsNil predicate on the "money" field.
+func MoneyIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldMoney))
+}
+
+// MoneyNotNil applies the NotNil predicate on the "money" field.
+func MoneyNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldMoney))
+}
+
+// MoneyEqualFold applies the EqualFold predicate on the "money" field.
+func MoneyEqualFold(v decimal.Decimal) predicate.User {
+	vc := v.String()
+	return predicate.User(sql.FieldEqualFold(FieldMoney, vc))
+}
+
+// MoneyContainsFold applies the ContainsFold predicate on the "money" field.
+func MoneyContainsFold(v decimal.Decimal) predicate.User {
+	vc := v.String()
+	return predicate.User(sql.FieldContainsFold(FieldMoney, vc))
 }
 
 // And groups predicates with the AND operator between them.
