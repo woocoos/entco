@@ -1,4 +1,6 @@
 scalar Decimal
 type Mutation {
     createUser(name: String!, money: Decimal): User!
+    createUserByInput(input: CreateUserInput!): User!
+    updateUser(id:ID!,input: UpdateUserInput!): User!
 }

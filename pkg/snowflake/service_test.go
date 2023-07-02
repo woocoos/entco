@@ -20,6 +20,18 @@ func TestSetDefaultNode(t *testing.T) {
 		check func()
 	}{
 		{
+			name: "init",
+			args: args{
+				cnf: nil,
+			},
+			check: func() {
+				assert.Equal(t, uint8(10), snowflake.NodeBits)
+				assert.Equal(t, uint8(12), snowflake.StepBits)
+				id := New()
+				assert.Len(t, id.String(), 19)
+			},
+		},
+		{
 			name: "default",
 			args: args{
 				cnf: conf.NewFromStringMap(map[string]any{}),
@@ -77,7 +89,9 @@ func TestSetDefaultNode(t *testing.T) {
 				assert.Error(t, SetDefaultNode(tt.args.cnf))
 				return
 			}
-			require.NoError(t, SetDefaultNode(tt.args.cnf))
+			if tt.args.cnf != nil {
+				require.NoError(t, SetDefaultNode(tt.args.cnf))
+			}
 			tt.check()
 		})
 	}

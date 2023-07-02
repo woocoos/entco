@@ -24,6 +24,7 @@ func main() {
 	}
 	opts := []entc.Option{
 		entc.Extensions(ex),
+		genx.GlobalID(),
 		genx.SimplePagination(),
 	}
 	err = entc.Generate("./ent/schema", &gen.Config{},

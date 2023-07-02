@@ -16,6 +16,7 @@ components and tools for knockout applications
 - Soft Delete: support soft delete
 - Tenant: support tenant and data isolation
 - PrimaryKey: support snowflake id.
+- Resolver Code: support resolver code generator
 
 #### Ent Client:
 

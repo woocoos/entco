@@ -1,3 +1,4 @@
+// This package is used to Debug
 package main
 
 import (
@@ -22,6 +23,7 @@ func main() {
 	}
 	opts := []entc.Option{
 		entc.Extensions(ex),
+		genx.GlobalID(),
 		genx.SimplePagination(),
 	}
 	err = entc.Generate("./gentest/ent/schema", &gen.Config{

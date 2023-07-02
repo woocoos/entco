@@ -11,6 +11,18 @@ var (
 	defaultNode *snowflake.Node
 )
 
+func init() {
+	node := 1
+	ns := os.Getenv("SNOWFLAKE_NODE_ID")
+	if ns != "" {
+		n, _ := strconv.Atoi(ns)
+		if n > 0 {
+			node = n
+		}
+	}
+	defaultNode, _ = snowflake.NewNode(int64(node))
+}
+
 func SetDefaultNode(cnf *conf.Configuration) (err error) {
 	if nb := cnf.Int("nodeBits"); nb > 0 {
 		snowflake.NodeBits = uint8(nb)

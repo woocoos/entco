@@ -16,6 +16,11 @@ func (r *mutationResolver) CreateUser(ctx context.Context, name string, money *d
 	return r.client.User.Create().SetName(name).SetNillableMoney(money).Save(ctx)
 }
 
+// UpdateUser is the resolver for the updateUser field.
+func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input ent.UpdateUserInput) (*ent.User, error) {
+	return ent.FromContext(ctx).User.UpdateOneID(id).SetInput(input).Save(ctx)
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
