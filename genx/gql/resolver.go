@@ -72,12 +72,9 @@ func (r ResolverPlugin) Implement(f *codegen.Field) (val string) {
 func (r ResolverPlugin) GenerateCode(data *codegen.Data) error {
 	fi, err := os.Stat(data.Config.Resolver.Filename)
 	// just override the resolver.go in this time if file is new created.
-	if errors.Is(err, fs.ErrNotExist) || time.Now().Sub(fi.ModTime()) < time.Second {
+	if errors.Is(err, fs.ErrNotExist) || time.Now().Sub(fi.ModTime()) < time.Second*5 {
 		err := r.OverrideResolverStruct(data.Config)
 		if err != nil {
-			return err
-		}
-		if err = r.FormatFile(data.Config.Resolver.Filename); err != nil {
 			return err
 		}
 	}
@@ -87,14 +84,14 @@ func (r ResolverPlugin) GenerateCode(data *codegen.Data) error {
 func (r ResolverPlugin) FormatFile(path string) error {
 	content, err := os.ReadFile(path)
 	if err != nil {
-		return fmt.Errorf("read file %s: %w", path, err)
+		return fmt.Errorf("format file:read file %s: %w", path, err)
 	}
 	src, err := imports.Process(path, content, nil)
 	if err != nil {
 		return fmt.Errorf("format file %s: %w", path, err)
 	}
 	if err := os.WriteFile(path, src, 0644); err != nil {
-		return fmt.Errorf("write file %s: %w", path, err)
+		return fmt.Errorf("format file:write file %s: %w", path, err)
 	}
 	return nil
 }
@@ -105,11 +102,15 @@ func (r ResolverPlugin) OverrideResolverStruct(config *config.Config) error {
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(config.Resolver.Filename, b.Bytes(), 0644)
-	if err != nil {
-		return err
+	path := config.Resolver.Filename
+	if path == "" { // no resolver file
+		return nil
 	}
-	if err = r.FormatFile(config.Resolver.Filename); err != nil {
+	err = os.WriteFile(path, b.Bytes(), 0644)
+	if err != nil {
+		return fmt.Errorf("write file %s: %w", path, err)
+	}
+	if err = r.FormatFile(path); err != nil {
 		return err
 	}
 
