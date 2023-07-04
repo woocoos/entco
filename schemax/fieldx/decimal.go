@@ -85,8 +85,12 @@ func (b *DecimalBuilder) Max(i decimal.Decimal) *DecimalBuilder {
 }
 
 // Default sets the default value of the field.
-func (b *DecimalBuilder) Default(i decimal.Decimal) *DecimalBuilder {
-	b.desc.Default = i
+func (b *DecimalBuilder) Default(d string) *DecimalBuilder {
+	// check value first
+	decimal.RequireFromString(d)
+	b.desc.Default = func() decimal.Decimal {
+		return decimal.RequireFromString(d)
+	}
 	return b
 }
 

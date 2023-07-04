@@ -34,7 +34,7 @@ func (User) Fields() []ent.Field {
 				entproto.Field(3)),
 		fieldx.Decimal("money").Precision(10, 6).Optional().
 			Range(decimal.NewFromInt(1), decimal.NewFromInt(100000)).
-			Comment("money").Nillable(),
+			Comment("money").Nillable().Default("2"),
 	}
 }
 

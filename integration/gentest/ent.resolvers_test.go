@@ -105,6 +105,21 @@ func (s *TestSuite) TestUser_Create() {
 		s.Require().Equal("test", ret.Data.CreateUser.Name)
 		s.Require().Equal(11.123, ret.Data.CreateUser.Money.InexactFloat64())
 	})
+	s.Run("decimal default", func() {
+		w := httptest.NewRecorder()
+		bd := strings.NewReader("{\"query\":\"mutation {\\n    createUser(name:\\\"test\\\"){\\n      name,money\\n  }\\n}\",\"variables\":{}}")
+		r := httptest.NewRequest("POST", "/graphql/query", bd)
+		r.Header.Set("Content-Type", "application/json")
+		srv.ServeHTTP(w, r)
+		s.Require().Equal(200, w.Code)
+		var ret struct {
+			Data struct {
+				CreateUser ent.User
+			}
+		}
+		s.Require().NoError(json.Unmarshal(w.Body.Bytes(), &ret))
+		s.Require().Equal(float64(2), ret.Data.CreateUser.Money.InexactFloat64())
+	})
 	s.Run("validate", func() {
 		w := httptest.NewRecorder()
 		bd := strings.NewReader("{\"query\":\"mutation {\\n    createUser(name:\\\"test\\\",money: 0.1123){\\n      name,money\\n  }\\n}\",\"variables\":{}}")

@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/shopspring/decimal"
 	"github.com/woocoos/entco/integration/gentest/ent/schema"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
 )
@@ -25,6 +26,8 @@ func init() {
 	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 	// userDescMoney is the schema descriptor for money field.
 	userDescMoney := userFields[2].Descriptor()
+	// user.DefaultMoney holds the default value on creation for the money field.
+	user.DefaultMoney = userDescMoney.Default.(func() decimal.Decimal)
 	// user.MoneyValidator is a validator for the "money" field. It is called by the builders before save.
 	user.MoneyValidator = userDescMoney.Validators[0].(func(string) error)
 }

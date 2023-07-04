@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -46,6 +47,8 @@ var (
 	NameValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DefaultMoney holds the default value on creation for the "money" field.
+	DefaultMoney func() decimal.Decimal
 	// MoneyValidator is a validator for the "money" field. It is called by the builders before save.
 	MoneyValidator func(string) error
 )

@@ -94,6 +94,10 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultCreatedAt()
 		uc.mutation.SetCreatedAt(v)
 	}
+	if _, ok := uc.mutation.Money(); !ok {
+		v := user.DefaultMoney()
+		uc.mutation.SetMoney(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
