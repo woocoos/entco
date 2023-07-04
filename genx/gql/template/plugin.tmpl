@@ -9,7 +9,9 @@
 {{- end -}}
 {{- define "ent-delete" -}}
     {{- $first:= index .Args 0 -}}
-    return ent.FromContext(ctx).{{ .FieldDefinition.Type.NamedType }}.DeleteOneID({{$first.VarName}}).Exec(ctx)
+    {{- $type := trimPrefix .GoFieldName "Delete" -}}
+    err := ent.FromContext(ctx).{{ $type }}.DeleteOneID({{$first.VarName}}).Exec(ctx)
+    return err == nil, err
 {{- end -}}
 {{- define "node" -}}
     {{- $first:= index .Args 0 -}}

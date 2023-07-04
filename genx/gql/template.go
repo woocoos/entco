@@ -4,6 +4,7 @@ import (
 	"embed"
 	"github.com/99designs/gqlgen/codegen"
 	"github.com/vektah/gqlparser/v2/ast"
+	"go/types"
 	"strings"
 	"text/template"
 )
@@ -20,6 +21,7 @@ var (
 		"findUpdateEntArg": findUpdateEntArgs,
 		"toLower":          strings.ToLower, // some as ent
 		"trimSuffix":       strings.TrimSuffix,
+		"trimPrefix":       strings.TrimPrefix,
 	}
 )
 
@@ -69,6 +71,10 @@ func isEntDelete(field *codegen.Field) bool {
 
 	switch {
 	case strings.HasPrefix(field.GoFieldName, "Delete"):
+		// cannot bool pointer
+		if field.TypeReference.GO.String() != types.Typ[types.Bool].String() {
+			return false
+		}
 		return true
 	}
 	return false
