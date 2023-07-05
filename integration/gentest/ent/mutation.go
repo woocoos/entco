@@ -37,6 +37,7 @@ type UserMutation struct {
 	name          *string
 	created_at    *time.Time
 	money         *decimal.Decimal
+	addmoney      *decimal.Decimal
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*User, error)
@@ -216,6 +217,7 @@ func (m *UserMutation) ResetCreatedAt() {
 // SetMoney sets the "money" field.
 func (m *UserMutation) SetMoney(d decimal.Decimal) {
 	m.money = &d
+	m.addmoney = nil
 }
 
 // Money returns the value of the "money" field in the mutation.
@@ -244,9 +246,28 @@ func (m *UserMutation) OldMoney(ctx context.Context) (v *decimal.Decimal, err er
 	return oldValue.Money, nil
 }
 
+// AddMoney adds d to the "money" field.
+func (m *UserMutation) AddMoney(d decimal.Decimal) {
+	if m.addmoney != nil {
+		*m.addmoney = m.addmoney.Add(d)
+	} else {
+		m.addmoney = &d
+	}
+}
+
+// AddedMoney returns the value that was added to the "money" field in this mutation.
+func (m *UserMutation) AddedMoney() (r decimal.Decimal, exists bool) {
+	v := m.addmoney
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
 // ClearMoney clears the value of the "money" field.
 func (m *UserMutation) ClearMoney() {
 	m.money = nil
+	m.addmoney = nil
 	m.clearedFields[user.FieldMoney] = struct{}{}
 }
 
@@ -259,6 +280,7 @@ func (m *UserMutation) MoneyCleared() bool {
 // ResetMoney resets all changes to the "money" field.
 func (m *UserMutation) ResetMoney() {
 	m.money = nil
+	m.addmoney = nil
 	delete(m.clearedFields, user.FieldMoney)
 }
 
@@ -372,13 +394,21 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *UserMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addmoney != nil {
+		fields = append(fields, user.FieldMoney)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case user.FieldMoney:
+		return m.AddedMoney()
+	}
 	return nil, false
 }
 
@@ -387,6 +417,13 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *UserMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case user.FieldMoney:
+		v, ok := value.(decimal.Decimal)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMoney(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User numeric field %s", name)
 }

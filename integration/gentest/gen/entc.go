@@ -22,7 +22,7 @@ func main() {
 		log.Fatalf("creating entgql extension: %v", err)
 	}
 	opts := []entc.Option{
-		entc.Extensions(ex),
+		entc.Extensions(ex, genx.DecimalExtension{}),
 		genx.GlobalID(),
 		genx.SimplePagination(),
 	}

@@ -36,6 +36,7 @@ func (uu *UserUpdate) SetName(s string) *UserUpdate {
 
 // SetMoney sets the "money" field.
 func (uu *UserUpdate) SetMoney(d decimal.Decimal) *UserUpdate {
+	uu.mutation.ResetMoney()
 	uu.mutation.SetMoney(d)
 	return uu
 }
@@ -45,6 +46,12 @@ func (uu *UserUpdate) SetNillableMoney(d *decimal.Decimal) *UserUpdate {
 	if d != nil {
 		uu.SetMoney(*d)
 	}
+	return uu
+}
+
+// AddMoney adds d to the "money" field.
+func (uu *UserUpdate) AddMoney(d decimal.Decimal) *UserUpdate {
+	uu.mutation.AddMoney(d)
 	return uu
 }
 
@@ -94,7 +101,7 @@ func (uu *UserUpdate) check() error {
 		}
 	}
 	if v, ok := uu.mutation.Money(); ok {
-		if err := user.MoneyValidator(v.String()); err != nil {
+		if err := user.MoneyValidator(v); err != nil {
 			return &ValidationError{Name: "money", err: fmt.Errorf(`ent: validator failed for field "User.money": %w`, err)}
 		}
 	}
@@ -117,10 +124,13 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 	}
 	if value, ok := uu.mutation.Money(); ok {
-		_spec.SetField(user.FieldMoney, field.TypeString, value)
+		_spec.SetField(user.FieldMoney, field.TypeFloat64, value)
+	}
+	if value, ok := uu.mutation.AddedMoney(); ok {
+		_spec.AddField(user.FieldMoney, field.TypeFloat64, value)
 	}
 	if uu.mutation.MoneyCleared() {
-		_spec.ClearField(user.FieldMoney, field.TypeString)
+		_spec.ClearField(user.FieldMoney, field.TypeFloat64)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -150,6 +160,7 @@ func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
 
 // SetMoney sets the "money" field.
 func (uuo *UserUpdateOne) SetMoney(d decimal.Decimal) *UserUpdateOne {
+	uuo.mutation.ResetMoney()
 	uuo.mutation.SetMoney(d)
 	return uuo
 }
@@ -159,6 +170,12 @@ func (uuo *UserUpdateOne) SetNillableMoney(d *decimal.Decimal) *UserUpdateOne {
 	if d != nil {
 		uuo.SetMoney(*d)
 	}
+	return uuo
+}
+
+// AddMoney adds d to the "money" field.
+func (uuo *UserUpdateOne) AddMoney(d decimal.Decimal) *UserUpdateOne {
+	uuo.mutation.AddMoney(d)
 	return uuo
 }
 
@@ -221,7 +238,7 @@ func (uuo *UserUpdateOne) check() error {
 		}
 	}
 	if v, ok := uuo.mutation.Money(); ok {
-		if err := user.MoneyValidator(v.String()); err != nil {
+		if err := user.MoneyValidator(v); err != nil {
 			return &ValidationError{Name: "money", err: fmt.Errorf(`ent: validator failed for field "User.money": %w`, err)}
 		}
 	}
@@ -261,10 +278,13 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		_spec.SetField(user.FieldName, field.TypeString, value)
 	}
 	if value, ok := uuo.mutation.Money(); ok {
-		_spec.SetField(user.FieldMoney, field.TypeString, value)
+		_spec.SetField(user.FieldMoney, field.TypeFloat64, value)
+	}
+	if value, ok := uuo.mutation.AddedMoney(); ok {
+		_spec.AddField(user.FieldMoney, field.TypeFloat64, value)
 	}
 	if uuo.mutation.MoneyCleared() {
-		_spec.ClearField(user.FieldMoney, field.TypeString)
+		_spec.ClearField(user.FieldMoney, field.TypeFloat64)
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues

@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
+	"errors"
 	"github.com/shopspring/decimal"
 	"github.com/woocoos/entco/schemax/fieldx"
 	"time"
@@ -34,7 +35,13 @@ func (User) Fields() []ent.Field {
 				entproto.Field(3)),
 		fieldx.Decimal("money").Precision(10, 6).Optional().
 			Range(decimal.NewFromInt(1), decimal.NewFromInt(100000)).
-			Comment("money").Nillable().Default("2"),
+			Comment("money").Nillable().Default(2).
+			Validate(func(d decimal.Decimal) error {
+				if d.Cmp(decimal.Zero) < 0 {
+					return errors.New("money can't be negative")
+				}
+				return nil
+			}),
 	}
 }
 

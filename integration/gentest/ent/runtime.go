@@ -29,5 +29,19 @@ func init() {
 	// user.DefaultMoney holds the default value on creation for the money field.
 	user.DefaultMoney = userDescMoney.Default.(func() decimal.Decimal)
 	// user.MoneyValidator is a validator for the "money" field. It is called by the builders before save.
-	user.MoneyValidator = userDescMoney.Validators[0].(func(string) error)
+	user.MoneyValidator = func() func(decimal.Decimal) error {
+		validators := userDescMoney.Validators
+		fns := [...]func(decimal.Decimal) error{
+			validators[0].(func(decimal.Decimal) error),
+			validators[1].(func(decimal.Decimal) error),
+		}
+		return func(money decimal.Decimal) error {
+			for _, fn := range fns {
+				if err := fn(money); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 }

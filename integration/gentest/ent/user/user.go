@@ -50,7 +50,7 @@ var (
 	// DefaultMoney holds the default value on creation for the "money" field.
 	DefaultMoney func() decimal.Decimal
 	// MoneyValidator is a validator for the "money" field. It is called by the builders before save.
-	MoneyValidator func(string) error
+	MoneyValidator func(decimal.Decimal) error
 )
 
 // OrderOption defines the ordering options for the User queries.

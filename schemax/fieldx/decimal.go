@@ -43,11 +43,7 @@ func (b *DecimalBuilder) Unique() *DecimalBuilder {
 }
 
 func (b *DecimalBuilder) Range(i, j decimal.Decimal) *DecimalBuilder {
-	b.desc.Validators = append(b.desc.Validators, func(vs string) error {
-		v, err := decimal.NewFromString(vs)
-		if err != nil {
-			return err
-		}
+	b.desc.Validators = append(b.desc.Validators, func(v decimal.Decimal) error {
 		if v.Cmp(i) == -1 || v.Cmp(j) == 1 {
 			return errors.New("value out of range")
 		}
@@ -57,11 +53,7 @@ func (b *DecimalBuilder) Range(i, j decimal.Decimal) *DecimalBuilder {
 }
 
 func (b *DecimalBuilder) Min(i decimal.Decimal) *DecimalBuilder {
-	b.desc.Validators = append(b.desc.Validators, func(vs string) error {
-		v, err := decimal.NewFromString(vs)
-		if err != nil {
-			return err
-		}
+	b.desc.Validators = append(b.desc.Validators, func(v decimal.Decimal) error {
 		if v.Cmp(i) == -1 {
 			return errors.New("value out of range")
 		}
@@ -71,11 +63,7 @@ func (b *DecimalBuilder) Min(i decimal.Decimal) *DecimalBuilder {
 }
 
 func (b *DecimalBuilder) Max(i decimal.Decimal) *DecimalBuilder {
-	b.desc.Validators = append(b.desc.Validators, func(vs string) error {
-		v, err := decimal.NewFromString(vs)
-		if err != nil {
-			return err
-		}
+	b.desc.Validators = append(b.desc.Validators, func(v decimal.Decimal) error {
 		if v.Cmp(i) == 1 {
 			return errors.New("value out of range")
 		}
@@ -85,11 +73,9 @@ func (b *DecimalBuilder) Max(i decimal.Decimal) *DecimalBuilder {
 }
 
 // Default sets the default value of the field.
-func (b *DecimalBuilder) Default(d string) *DecimalBuilder {
-	// check value first
-	decimal.RequireFromString(d)
+func (b *DecimalBuilder) Default(d float64) *DecimalBuilder {
 	b.desc.Default = func() decimal.Decimal {
-		return decimal.RequireFromString(d)
+		return decimal.NewFromFloat(d)
 	}
 	return b
 }
@@ -127,7 +113,7 @@ func (b *DecimalBuilder) StructTag(s string) *DecimalBuilder {
 }
 
 // Validate adds a validator for this field. Operation fails if the validation fails.
-func (b *DecimalBuilder) Validate(fn func(d string) error) *DecimalBuilder {
+func (b *DecimalBuilder) Validate(fn func(d decimal.Decimal) error) *DecimalBuilder {
 	b.desc.Validators = append(b.desc.Validators, fn)
 	return b
 }

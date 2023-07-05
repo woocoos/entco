@@ -6,6 +6,7 @@ package gentest
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/shopspring/decimal"
 	"github.com/woocoos/entco/integration/gentest/ent"
@@ -16,9 +17,24 @@ func (r *mutationResolver) CreateUser(ctx context.Context, name string, money *d
 	return r.client.User.Create().SetName(name).SetNillableMoney(money).Save(ctx)
 }
 
+// CreateUserByInput is the resolver for the createUserByInput field.
+func (r *mutationResolver) CreateUserByInput(ctx context.Context, input ent.CreateUserInput) (*ent.User, error) {
+	panic(fmt.Errorf("not implemented: CreateUserByInput - createUserByInput"))
+}
+
 // UpdateUser is the resolver for the updateUser field.
 func (r *mutationResolver) UpdateUser(ctx context.Context, id int, input ent.UpdateUserInput) (*ent.User, error) {
 	return ent.FromContext(ctx).User.UpdateOneID(id).SetInput(input).Save(ctx)
+}
+
+// DeleteUser is the resolver for the deleteUser field.
+func (r *mutationResolver) DeleteUser(ctx context.Context, id int) (bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteUser - deleteUser"))
+}
+
+// DeleteUser1 is the resolver for the deleteUser1 field.
+func (r *mutationResolver) DeleteUser1(ctx context.Context, id int) (*bool, error) {
+	panic(fmt.Errorf("not implemented: DeleteUser1 - deleteUser1"))
 }
 
 // Mutation returns MutationResolver implementation.
