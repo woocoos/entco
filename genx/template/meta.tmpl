@@ -88,9 +88,7 @@ const (
 			{{- with $f.Validators }}
 				{{- $name := $f.Validator }}
 				{{- $type := $f.Type.Type.String }}
-                {{- if and $f.Type.Numeric $f.HasGoType }}
-                    {{- $type = $f.Type.RType.String }}
-                {{- end }}
+				{{- if isCustomerField $f }} {{- $type = $f.Type.RType.String }} {{ end }}
 				{{- if $f.IsJSON }}
 					{{- $type = $f.Type.String }}
 				{{- end }}

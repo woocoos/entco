@@ -262,7 +262,7 @@ func ({{ $receiver }} *{{ $onebuilder }}) ExecX(ctx context.Context) {
 			{{- with and (not $f.Immutable) (or $f.Validators $f.IsEnum $isValidator) }}
 				if v, ok := {{ $mutation }}.{{ $f.MutationGet }}(); ok {
                     {{- $type:= $f.BasicType "v"}}
-                    {{- if and $f.Type.Numeric $f.HasGoType }} {{ $type = "v" }}{{ end }}
+					{{- if isCustomerField $f }} {{ $type = "v" }} {{ end }}
 					if err := {{ if or $f.Validators $f.IsEnum }}{{ $.Package }}.{{ $f.Validator }}({{ $type }}){{ else }}v.Validate(){{ end }}; err != nil {
 						return &ValidationError{Name: "{{ $f.Name }}", err: fmt.Errorf(`{{ $pkg }}: validator failed for field "{{ $.Name }}.{{ $f.Name }}": %w`, err)}
 					}
