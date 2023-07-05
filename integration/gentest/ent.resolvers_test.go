@@ -7,9 +7,11 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/gin-gonic/gin"
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/suite"
 	"github.com/tsingsun/woocoo/pkg/gds"
 	"github.com/woocoos/entco/integration/gentest/ent"
+	"github.com/woocoos/entco/integration/gentest/ent/user"
 	"net/http/httptest"
 	"strconv"
 	"strings"
@@ -86,9 +88,12 @@ func (s *TestSuite) TestUsers_SimplePagination() {
 
 }
 
-func (s *TestSuite) TestUser_Create() {
+func (s *TestSuite) TestDecimal() {
 	srv := handler.New(NewSchema(s.client))
 	srv.AddTransport(transport.POST{})
+	s.Run("Op", func() {
+		s.NoError(s.client.User.Update().ClearMoney().Exec(context.Background()))
+	})
 	s.Run("normal", func() {
 		w := httptest.NewRecorder()
 		bd := strings.NewReader("{\"query\":\"mutation {\\n    createUser(name:\\\"test\\\",money: 11.123){\\n      name,money\\n  }\\n}\",\"variables\":{}}")
@@ -119,6 +124,10 @@ func (s *TestSuite) TestUser_Create() {
 		}
 		s.Require().NoError(json.Unmarshal(w.Body.Bytes(), &ret))
 		s.Require().Equal(float64(2), ret.Data.CreateUser.Money.InexactFloat64())
+		s.Run("decimal op", func() {
+			err := s.client.User.Update().AddMoney(decimal.NewFromFloat(12.12)).Where(user.Name("test")).Exec(context.Background())
+			s.NoError(err)
+		})
 	})
 	s.Run("validate", func() {
 		w := httptest.NewRecorder()

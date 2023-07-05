@@ -174,11 +174,6 @@ input UserWhereInput {
   moneyGTE: Decimal
   moneyLT: Decimal
   moneyLTE: Decimal
-  moneyContains: Decimal
-  moneyHasPrefix: Decimal
-  moneyHasSuffix: Decimal
   moneyIsNil: Boolean
   moneyNotNil: Boolean
-  moneyEqualFold: Decimal
-  moneyContainsFold: Decimal
 }

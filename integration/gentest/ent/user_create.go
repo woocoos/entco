@@ -114,7 +114,7 @@ func (uc *UserCreate) check() error {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "User.created_at"`)}
 	}
 	if v, ok := uc.mutation.Money(); ok {
-		if err := user.MoneyValidator(v.String()); err != nil {
+		if err := user.MoneyValidator(v); err != nil {
 			return &ValidationError{Name: "money", err: fmt.Errorf(`ent: validator failed for field "User.money": %w`, err)}
 		}
 	}
@@ -153,7 +153,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_node.CreatedAt = value
 	}
 	if value, ok := uc.mutation.Money(); ok {
-		_spec.SetField(user.FieldMoney, field.TypeString, value)
+		_spec.SetField(user.FieldMoney, field.TypeFloat64, value)
 		_node.Money = &value
 	}
 	return _node, _spec
