@@ -92,7 +92,7 @@ func (s *TestSuite) TestDecimal() {
 	srv := handler.New(NewSchema(s.client))
 	srv.AddTransport(transport.POST{})
 	s.Run("Op", func() {
-		s.client.User.Update().AddMoney(decimal.NewFromFloat(12.12)).Exec(context.Background())
+		s.client.User.Update().ClearMoney().Exec(context.Background())
 	})
 	s.Run("normal", func() {
 		w := httptest.NewRecorder()
