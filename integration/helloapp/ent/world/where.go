@@ -306,32 +306,15 @@ func PowerByContainsFold(v string) predicate.World {
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.World) predicate.World {
-	return predicate.World(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.World(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.World) predicate.World {
-	return predicate.World(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.World(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.World) predicate.World {
-	return predicate.World(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.World(sql.NotPredicates(p))
 }

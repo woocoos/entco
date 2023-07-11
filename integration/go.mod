@@ -5,7 +5,7 @@ go 1.20
 replace github.com/woocoos/entco => ../
 
 require (
-	entgo.io/contrib v0.4.5
+	entgo.io/contrib v0.4.6-0.20230615102013-704944fdc0f6
 	entgo.io/ent v0.12.4-0.20230702151415-1ec75238037c
 	github.com/99designs/gqlgen v0.17.34
 	github.com/gin-gonic/gin v1.9.1

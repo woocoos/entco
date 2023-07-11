@@ -26,7 +26,10 @@
 	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
 		hasPagination := after != nil || first != nil || before != nil || last != nil
 		if hasPagination || ignoredEdges {
-			if conn.TotalCount, err = {{ $r }}.Clone().Count(ctx); err != nil {
+			c := {{ $r }}.Clone()
+			{{- /* Clear the selection fields before counting to avoid generating invalid queries. */}}
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
 				return nil, err
 			}
 			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
@@ -172,7 +175,7 @@ func ({{ $receiver }} *{{ $query }}) collectField(ctx context.Context, opCtx *gr
 							}
 							path = append(path, edgesField, nodeField)
 							if field := collectedField(ctx, path...); field != nil {
-								if err := query.collectField(ctx, opCtx, *field, path, mayAddCondition(satisfies, "{{ $e.Type.Name }}")...); err != nil {
+								if err := query.collectField(ctx, opCtx, *field, path, mayAddCondition(satisfies, {{ nodeImplementorsVar $e.Type }})...); err != nil {
 									return err
 								}
 							}
@@ -188,7 +191,7 @@ func ({{ $receiver }} *{{ $query }}) collectField(ctx context.Context, opCtx *gr
 								query = pager.applyOrder(query)
 							}
 						{{- else }}
-							if err := query.collectField(ctx, opCtx, field, path, mayAddCondition(satisfies, "{{ $e.Type.Name }}")...); err != nil {
+							if err := query.collectField(ctx, opCtx, field, path, mayAddCondition(satisfies, {{ nodeImplementorsVar $e.Type }})...); err != nil {
 								return err
 							}
 						{{- end }}
@@ -419,15 +422,16 @@ func limitRows(ctx context.Context, partitionBy string, limit int, first,last *i
 
 // mayAddCondition appends another type condition to the satisfies list
 // if condition is enabled (Node/Nodes) and it does not exist in the list.
-func mayAddCondition(satisfies []string, typeCond string) []string {
-	if len(satisfies) == 0 {
-		return satisfies
-	}
-	for _, s := range satisfies {
-		if typeCond == s {
-			return satisfies
+func mayAddCondition(satisfies []string, typeCond []string) []string {
+Cond:
+	for _, c := range typeCond {
+		for _, s := range satisfies {
+			if c == s {
+				continue Cond
+			}
 		}
+		satisfies = append(satisfies, c)
 	}
-	return append(satisfies, typeCond)
+	return satisfies
 }
 {{ end }}
