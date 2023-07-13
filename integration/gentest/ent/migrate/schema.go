@@ -3,11 +3,23 @@
 package migrate
 
 import (
+	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/dialect/sql/schema"
 	"entgo.io/ent/schema/field"
 )
 
 var (
+	// RefTableColumns holds the columns for the "ref_table" table.
+	RefTableColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString},
+	}
+	// RefTableTable holds the schema information for the "ref_table" table.
+	RefTableTable = &schema.Table{
+		Name:       "ref_table",
+		Columns:    RefTableColumns,
+		PrimaryKey: []*schema.Column{RefTableColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -23,9 +35,13 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		RefTableTable,
 		UsersTable,
 	}
 )
 
 func init() {
+	RefTableTable.Annotation = &entsql.Annotation{
+		Table: "ref_table",
+	}
 }

@@ -8,9 +8,77 @@ import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/woocoos/entco/integration/gentest/ent/refschema"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
 	"github.com/woocoos/entco/pkg/pagination"
 )
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (rs *RefSchemaQuery) CollectFields(ctx context.Context, satisfies ...string) (*RefSchemaQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return rs, nil
+	}
+	if err := rs.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return rs, nil
+}
+
+func (rs *RefSchemaQuery) collectField(ctx context.Context, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	var (
+		unknownSeen    bool
+		fieldSeen      = make(map[string]struct{}, len(refschema.Columns))
+		selectedFields = []string{refschema.FieldID}
+	)
+	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
+		switch field.Name {
+		case "name":
+			if _, ok := fieldSeen[refschema.FieldName]; !ok {
+				selectedFields = append(selectedFields, refschema.FieldName)
+				fieldSeen[refschema.FieldName] = struct{}{}
+			}
+		case "id":
+		case "__typename":
+		default:
+			unknownSeen = true
+		}
+	}
+	if !unknownSeen {
+		rs.Select(selectedFields...)
+	}
+	return nil
+}
+
+type refschemaPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []RefSchemaPaginateOption
+}
+
+func newRefSchemaPaginateArgs(rv map[string]any) *refschemaPaginateArgs {
+	args := &refschemaPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[whereField].(*RefSchemaWhereInput); ok {
+		args.opts = append(args.opts, WithRefSchemaFilter(v.Filter))
+	}
+	return args
+}
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (u *UserQuery) CollectFields(ctx context.Context, satisfies ...string) (*UserQuery, error) {

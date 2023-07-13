@@ -12,8 +12,15 @@ import (
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
+	"github.com/woocoos/entco/integration/gentest/ent/refschema"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
 )
+
+// GlobalID returns the global identifier for the given RefSchema node.
+func (rs *RefSchema) GlobalID(context.Context) (string, error) {
+	id := fmt.Sprintf("%s:%d", refschema.Table, rs.ID)
+	return base64.StdEncoding.EncodeToString([]byte(id)), nil
+}
 
 // GlobalID returns the global identifier for the given User node.
 func (u *User) GlobalID(context.Context) (string, error) {
@@ -38,6 +45,8 @@ func FromGlobalID(s string) (*ResolvedGlobal, error) {
 // GlobalID returns the global identifier for the given type and id.
 func GlobalID(tp, id string) (string, error) {
 	switch tp {
+	case refschema.Table:
+		break
 	case user.Table:
 		break
 	default:

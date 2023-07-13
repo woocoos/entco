@@ -15,6 +15,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/errcode"
 	"github.com/vektah/gqlparser/v2/gqlerror"
+	"github.com/woocoos/entco/integration/gentest/ent/refschema"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
 	"github.com/woocoos/entco/pkg/pagination"
 )
@@ -97,6 +98,262 @@ func paginateLimit(first, last *int) int {
 		limit = *last + 1
 	}
 	return limit
+}
+
+// RefSchemaEdge is the edge representation of RefSchema.
+type RefSchemaEdge struct {
+	Node   *RefSchema `json:"node"`
+	Cursor Cursor     `json:"cursor"`
+}
+
+// RefSchemaConnection is the connection containing edges to RefSchema.
+type RefSchemaConnection struct {
+	Edges      []*RefSchemaEdge `json:"edges"`
+	PageInfo   PageInfo         `json:"pageInfo"`
+	TotalCount int              `json:"totalCount"`
+}
+
+func (c *RefSchemaConnection) build(nodes []*RefSchema, pager *refschemaPager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *RefSchema
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *RefSchema {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *RefSchema {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*RefSchemaEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &RefSchemaEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// RefSchemaPaginateOption enables pagination customization.
+type RefSchemaPaginateOption func(*refschemaPager) error
+
+// WithRefSchemaOrder configures pagination ordering.
+func WithRefSchemaOrder(order *RefSchemaOrder) RefSchemaPaginateOption {
+	if order == nil {
+		order = DefaultRefSchemaOrder
+	}
+	o := *order
+	return func(pager *refschemaPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultRefSchemaOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithRefSchemaFilter configures pagination filter.
+func WithRefSchemaFilter(filter func(*RefSchemaQuery) (*RefSchemaQuery, error)) RefSchemaPaginateOption {
+	return func(pager *refschemaPager) error {
+		if filter == nil {
+			return errors.New("RefSchemaQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type refschemaPager struct {
+	reverse bool
+	order   *RefSchemaOrder
+	filter  func(*RefSchemaQuery) (*RefSchemaQuery, error)
+}
+
+func newRefSchemaPager(opts []RefSchemaPaginateOption, reverse bool) (*refschemaPager, error) {
+	pager := &refschemaPager{reverse: reverse}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultRefSchemaOrder
+	}
+	return pager, nil
+}
+
+func (p *refschemaPager) applyFilter(query *RefSchemaQuery) (*RefSchemaQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *refschemaPager) toCursor(rs *RefSchema) Cursor {
+	return p.order.Field.toCursor(rs)
+}
+
+func (p *refschemaPager) applyCursors(query *RefSchemaQuery, after, before *Cursor) (*RefSchemaQuery, error) {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	for _, predicate := range entgql.CursorsPredicate(after, before, DefaultRefSchemaOrder.Field.column, p.order.Field.column, direction) {
+		query = query.Where(predicate)
+	}
+	return query, nil
+}
+
+func (p *refschemaPager) applyOrder(query *RefSchemaQuery) *RefSchemaQuery {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	query = query.Order(p.order.Field.toTerm(direction.OrderTermOption()))
+	if p.order.Field != DefaultRefSchemaOrder.Field {
+		query = query.Order(DefaultRefSchemaOrder.Field.toTerm(direction.OrderTermOption()))
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return query
+}
+
+func (p *refschemaPager) orderExpr(query *RefSchemaQuery) sql.Querier {
+	direction := p.order.Direction
+	if p.reverse {
+		direction = direction.Reverse()
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(p.order.Field.column)
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.column).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultRefSchemaOrder.Field {
+			b.Comma().Ident(DefaultRefSchemaOrder.Field.column).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to RefSchema.
+func (rs *RefSchemaQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...RefSchemaPaginateOption,
+) (*RefSchemaConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newRefSchemaPager(opts, last != nil)
+	if err != nil {
+		return nil, err
+	}
+	if rs, err = pager.applyFilter(rs); err != nil {
+		return nil, err
+	}
+	conn := &RefSchemaConnection{Edges: []*RefSchemaEdge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			c := rs.Clone()
+			c.ctx.Fields = nil
+			if conn.TotalCount, err = c.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+	if rs, err = pager.applyCursors(rs, after, before); err != nil {
+		return nil, err
+	}
+	if limit := paginateLimit(first, last); limit != 0 {
+		rs.Limit(limit)
+	}
+	if sp, ok := pagination.SimplePaginationFromContext(ctx); ok {
+		if first != nil {
+			rs.Offset((sp.PageIndex - sp.CurrentIndex - 1) * *first)
+		}
+		if last != nil {
+			rs.Offset((sp.CurrentIndex - sp.PageIndex - 1) * *last)
+		}
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := rs.collectField(ctx, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+	rs = pager.applyOrder(rs)
+	nodes, err := rs.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+// RefSchemaOrderField defines the ordering field of RefSchema.
+type RefSchemaOrderField struct {
+	// Value extracts the ordering value from the given RefSchema.
+	Value    func(*RefSchema) (ent.Value, error)
+	column   string // field or computed.
+	toTerm   func(...sql.OrderTermOption) refschema.OrderOption
+	toCursor func(*RefSchema) Cursor
+}
+
+// RefSchemaOrder defines the ordering of RefSchema.
+type RefSchemaOrder struct {
+	Direction OrderDirection       `json:"direction"`
+	Field     *RefSchemaOrderField `json:"field"`
+}
+
+// DefaultRefSchemaOrder is the default ordering of RefSchema.
+var DefaultRefSchemaOrder = &RefSchemaOrder{
+	Direction: entgql.OrderDirectionAsc,
+	Field: &RefSchemaOrderField{
+		Value: func(rs *RefSchema) (ent.Value, error) {
+			return rs.ID, nil
+		},
+		column: refschema.FieldID,
+		toTerm: refschema.ByID,
+		toCursor: func(rs *RefSchema) Cursor {
+			return Cursor{ID: rs.ID}
+		},
+	},
+}
+
+// ToEdge converts RefSchema into RefSchemaEdge.
+func (rs *RefSchema) ToEdge(order *RefSchemaOrder) *RefSchemaEdge {
+	if order == nil {
+		order = DefaultRefSchemaOrder
+	}
+	return &RefSchemaEdge{
+		Node:   rs,
+		Cursor: order.Field.toCursor(rs),
+	}
 }
 
 // UserEdge is the edge representation of User.

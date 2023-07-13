@@ -6,5 +6,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// RefSchema is the predicate function for refschema builders.
+type RefSchema func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

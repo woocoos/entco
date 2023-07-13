@@ -1,8 +1,10 @@
 package genx
 
 import (
+	atlas "ariga.io/atlas/sql/schema"
 	"embed"
 	"entgo.io/contrib/entgql"
+	"entgo.io/ent/dialect/sql/schema"
 	"entgo.io/ent/entc"
 	"entgo.io/ent/entc/gen"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -104,4 +106,34 @@ func annotation(ants gen.Annotations) (*entgql.Annotation, error) {
 		}
 	}
 	return ant, nil
+}
+
+// SkipTablesDiffHook is a schema migration hook for skip tables diff thus skip migration.
+// the table name is database name,not the ent schema struct name.
+//
+//	err = client.Schema.Create(ctx,SkipTablesDiffHook("table1","table2"))
+func SkipTablesDiffHook(tables ...string) schema.MigrateOption {
+	return schema.WithDiffHook(func(next schema.Differ) schema.Differ {
+		return schema.DiffFunc(func(current, desired *atlas.Schema) ([]atlas.Change, error) {
+			var dt []*atlas.Table
+		LOOP:
+			for i, table := range desired.Tables {
+				for _, t := range tables {
+					if table.Name == t {
+						continue LOOP
+					}
+				}
+				dt = append(dt, desired.Tables[i])
+			}
+			desired.Tables = dt
+			// Before calculating changes.
+			changes, err := next.Diff(current, desired)
+			if err != nil {
+				return nil, err
+			}
+			// After diff, you can filter
+			// changes or return new ones.
+			return changes, nil
+		})
+	})
 }

@@ -9,6 +9,18 @@ import (
 	"github.com/woocoos/entco/integration/gentest/ent"
 )
 
+// The RefSchemaFunc type is an adapter to allow the use of ordinary
+// function as RefSchema mutator.
+type RefSchemaFunc func(context.Context, *ent.RefSchemaMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f RefSchemaFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.RefSchemaMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RefSchemaMutation", m)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
