@@ -131,7 +131,7 @@ func Test_WorldWithTenant(t *testing.T) {
 
 	err = client.World.Create().SetName("abc").Exec(tctx)
 	assert.NoError(t, err)
-	c, err = client.World.Query().Where(world.TenantID(tid)).Count(schemax.SkipTenantKey(tctx))
+	c, err = client.World.Query().Where(world.TenantID(tid)).Count(schemax.SkipTenantPrivacy(tctx))
 	assert.NoError(t, err)
 	assert.Equal(t, 1, c)
 }

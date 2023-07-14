@@ -21,6 +21,19 @@ var (
 	FieldTenantID = "tenant_id"
 )
 
+type tenantPrivacyKey struct{}
+
+// SkipTenantPrivacy returns a new context that skips the TenantRule interceptor/mutators.
+func SkipTenantPrivacy(parent context.Context) context.Context {
+	return context.WithValue(parent, tenantPrivacyKey{}, true)
+}
+
+// ifSkipTenantPrivacy returns true if the TenantRule interceptor/mutators should be skipped.
+func ifSkipTenantPrivacy(ctx context.Context) bool {
+	skip, _ := ctx.Value(tenantPrivacyKey{}).(bool)
+	return skip
+}
+
 // TenantMixin helps to generate a tenant_id field and inject resource query.
 //
 //	 type World struct {
@@ -49,19 +62,11 @@ func (TenantMixin[T, Q]) Fields() []ent.Field {
 	}
 }
 
-type tenantKey struct{}
-
-// SkipTenantKey returns a new context that skips the soft-delete interceptor/mutators.
-func SkipTenantKey(parent context.Context) context.Context {
-	return context.WithValue(parent, tenantKey{}, true)
-}
-
 // Interceptors of the SoftDeleteMixin.
 func (d TenantMixin[T, Q]) Interceptors() []ent.Interceptor {
 	return []ent.Interceptor{
 		ent.TraverseFunc(func(ctx context.Context, q ent.Query) error {
-			// Skip soft-delete, means include soft-deleted entities.
-			if skip, _ := ctx.Value(tenantKey{}).(bool); skip {
+			if ifSkipTenantPrivacy(ctx) {
 				return nil
 			}
 
@@ -85,7 +90,7 @@ func (d TenantMixin[T, Q]) Hooks() []ent.Hook {
 	return []ent.Hook{
 		func(next ent.Mutator) ent.Mutator {
 			return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-				if skip, _ := ctx.Value(tenantKey{}).(bool); skip {
+				if ifSkipTenantPrivacy(ctx) {
 					return next.Mutate(ctx, m)
 				}
 
