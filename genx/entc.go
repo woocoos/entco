@@ -58,7 +58,7 @@ func ChangeRelayNodeType() entgql.SchemaHook {
 			schema.Types["GID"] = &ast.Definition{
 				Kind:        ast.Scalar,
 				Name:        "GID",
-				Description: "An object with an Global ID,for using in Noder interface.",
+				Description: "An object with a Global ID,for using in Noder interface.",
 			}
 		}
 		return nil
