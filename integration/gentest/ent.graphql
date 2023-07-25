@@ -15,7 +15,7 @@ Define a Relay Cursor type:
 https://relay.dev/graphql/connections.htm#sec-Cursor
 """
 scalar Cursor
-"""An object with an Global ID,for using in Noder interface."""
+"""An object with a Global ID,for using in Noder interface."""
 scalar GID
 """
 An object with an ID.

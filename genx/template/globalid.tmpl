@@ -5,12 +5,13 @@
 {{ $pkg := base $.Config.Package }}
 {{ template "header" $ }}
 
-{{ $gqlNodes := filterNodes $.Nodes (skipMode "type") }}
+{{ $gqlNodes := $.Nodes }}
+{{ $gqlNodes = filterNodes $.Nodes (skipMode "type") }}
 
 {{- range $n := $gqlNodes }}
 	// GlobalID returns the global identifier for the given {{ $n.Name }} node.
 	func ({{ $n.Receiver }} *{{ $n.Name }}) GlobalID(context.Context) (string, error) {
-		id := fmt.Sprintf("%s:%{{ if $n.ID.Type.Numeric}}d{{ else }}s{{ end }}", {{ $n.Package }}.Table, {{ $n.Receiver }}.ID)
+		id := fmt.Sprintf("{{ $n.Name }}:%{{ if $n.ID.Type.Numeric}}d{{ else }}s{{ end }}", {{ $n.Receiver }}.ID)
 		return base64.StdEncoding.EncodeToString([]byte(id)), nil
 	}
 {{- end }}
@@ -32,7 +33,7 @@ func FromGlobalID(s string) (*ResolvedGlobal, error) {
 func GlobalID(tp,id string) (string,error) {
 	switch tp {
 	{{- range $n := $gqlNodes }}
-	case {{ $n.Package }}.Table:
+	case {{ quote $n.Name }}:
 		break
 	{{- end }}
 	default:

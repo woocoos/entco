@@ -8,7 +8,8 @@
     {{- end }}
 
     {{ template "import" $ }}
-    {{ $gqlNodes := filterNodes $.Nodes (skipMode "mutation_create_input" "mutation_update_input") }}
+    {{ $gqlNodes := $.Nodes }}
+    {{ $gqlNodes = filterNodes $.Nodes (skipMode "mutation_create_input" "mutation_update_input") }}
     import (
     {{- range $n := $gqlNodes }}
         {{- template "import/types" $n }}

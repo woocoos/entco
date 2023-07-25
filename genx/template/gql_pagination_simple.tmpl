@@ -73,7 +73,8 @@
 
 {{ template "import" $ }}
 
-{{ $gqlNodes := filterNodes $.Nodes (skipMode "type") }}
+{{ $gqlNodes := $.Nodes }}
+{{ $gqlNodes = filterNodes $.Nodes (skipMode "type") }}
 
 import (
 	"github.com/99designs/gqlgen/graphql"
