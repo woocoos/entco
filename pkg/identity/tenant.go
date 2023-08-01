@@ -2,6 +2,7 @@ package identity
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/tsingsun/woocoo/pkg/conf"
@@ -36,34 +37,48 @@ func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 			return handler.PathSkip(opts.Exclude, c.Request.URL)
 		}
 	}
-	return func(c *gin.Context) {
-		if opts.Skipper(c) {
-			return
-		}
-		tid := ""
-		switch opts.Lookup {
-		case "host":
+	var findTenantValue func(c *gin.Context) (string, error)
+	switch opts.Lookup {
+	case "host":
+		findTenantValue = func(c *gin.Context) (str string, err error) {
 			host := c.Request.Host
 			if len(opts.RootDomain) > 0 {
-				tid = host[:len(host)-len(opts.RootDomain)-1]
+				str = host[:len(host)-len(opts.RootDomain)-1]
 			}
-		default:
+			return
+		}
+	default:
+		findTenantValue = func(c *gin.Context) (str string, err error) {
 			extr, err := handler.CreateExtractors(opts.Lookup, "")
 			if err != nil {
-				handler.AbortWithError(c, http.StatusBadRequest, fmt.Errorf("invalid tenant id %v", err))
 				return
 			}
 			for _, extractor := range extr {
 				ts, err := extractor(c)
 				if err == nil && len(ts) != 0 {
-					tid = ts[0]
+					str = ts[0]
 					break
 				}
 			}
+			return
+		}
+	}
+	return func(c *gin.Context) {
+		if opts.Skipper(c) {
+			return
+		}
+		tid, err := findTenantValue(c)
+		if err != nil {
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("get tenant id error: %v", err))
+			return
+		}
+		if tid == "" {
+			c.AbortWithError(http.StatusBadRequest, errors.New("miss tenant id"))
+			return
 		}
 		v, err := strconv.Atoi(tid)
 		if err != nil {
-			handler.AbortWithError(c, http.StatusBadRequest, fmt.Errorf("invalid tenant id %s:%v", tid, err))
+			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid tenant id %s:%v", tid, err))
 			return
 		}
 		c.Set(tenantContextKey, v)
