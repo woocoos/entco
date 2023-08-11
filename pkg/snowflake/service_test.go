@@ -9,6 +9,13 @@ import (
 	"testing"
 )
 
+func reset() {
+	snowflake.Epoch = 1288834974657
+	snowflake.NodeBits = 10
+	snowflake.StepBits = 12
+	defaultNode = nil
+}
+
 func TestSetDefaultNode(t *testing.T) {
 	type args struct {
 		cnf *conf.Configuration
@@ -25,10 +32,10 @@ func TestSetDefaultNode(t *testing.T) {
 				cnf: nil,
 			},
 			check: func() {
-				assert.Equal(t, uint8(10), snowflake.NodeBits)
-				assert.Equal(t, uint8(12), snowflake.StepBits)
 				id := New()
-				assert.Len(t, id.String(), 19)
+				assert.EqualValues(t, 3, int(snowflake.NodeBits))
+				assert.EqualValues(t, 8, int(snowflake.StepBits))
+				assert.Len(t, id.String(), 14)
 			},
 		},
 		{
@@ -39,7 +46,7 @@ func TestSetDefaultNode(t *testing.T) {
 			panic: false,
 			check: func() {
 				id := New()
-				assert.Len(t, id.String(), 19)
+				assert.Len(t, id.String(), 14)
 			},
 		},
 		{
@@ -57,29 +64,7 @@ func TestSetDefaultNode(t *testing.T) {
 				assert.Equal(t, uint8(1), snowflake.NodeBits)
 				assert.Equal(t, uint8(8), snowflake.StepBits)
 				id := New()
-				assert.Len(t, id.String(), 15)
-			},
-		},
-		{
-			name: "node from env",
-			args: args{
-				cnf: func() *conf.Configuration {
-					defer func() {
-						os.Setenv("SNOWFLAKE_NODE_ID", "")
-					}()
-					require.NoError(t, os.Setenv("SNOWFLAKE_NODE_ID", "2"))
-					return conf.NewFromStringMap(map[string]any{
-						"nodeBits": 2,
-						"stepBits": 8,
-					})
-				}(),
-			},
-			panic: false,
-			check: func() {
-				assert.Equal(t, uint8(2), snowflake.NodeBits)
-				assert.Equal(t, uint8(8), snowflake.StepBits)
-				id := New()
-				assert.Len(t, id.String(), 15)
+				assert.Len(t, id.String(), 13)
 			},
 		},
 	}
@@ -92,6 +77,90 @@ func TestSetDefaultNode(t *testing.T) {
 			if tt.args.cnf != nil {
 				require.NoError(t, SetDefaultNode(tt.args.cnf))
 			}
+			tt.check()
+		})
+	}
+}
+
+func TestSetDefaultNodeFromEnv(t *testing.T) {
+	tests := []struct {
+		name    string
+		init    func()
+		panic   bool
+		check   func()
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "node from env",
+			init: func() {
+				require.NoError(t, os.Setenv("SNOWFLAKE_NODE_LIST", "127.0.0.1,10.0.0.1"))
+				require.NoError(t, os.Setenv("HOST_IP", "10.0.0.1"))
+				require.NoError(t, os.Setenv("SNOWFLAKE_DEFAULT", "1"))
+			},
+			panic: false,
+			check: func() {
+				assert.EqualValues(t, 10, snowflake.NodeBits)
+				assert.EqualValues(t, 12, snowflake.StepBits)
+				id := New()
+				assert.EqualValues(t, 2, id.Node())
+			},
+		},
+		{
+			name: "env with default",
+			init: func() {
+				require.NoError(t, os.Setenv("SNOWFLAKE_NODE_LIST", "127.0.0.1,10.0.0.1"))
+				require.NoError(t, os.Setenv("HOST_IP", "10.0.0.1"))
+				require.NoError(t, os.Setenv("SNOWFLAKE_DEFAULT", "0"))
+			},
+			panic: false,
+			check: func() {
+				assert.EqualValues(t, 3, snowflake.NodeBits)
+				assert.EqualValues(t, 8, snowflake.StepBits)
+				id := New()
+				assert.EqualValues(t, 2, id.Node())
+			},
+		},
+		{
+			name: "empty list",
+			init: func() {
+				require.NoError(t, os.Setenv("SNOWFLAKE_NODE_LIST", ""))
+				require.NoError(t, os.Setenv("HOST_IP", "10.0.0.1"))
+			},
+			panic: false,
+			check: func() {
+				id := New()
+				assert.EqualValues(t, 1, id.Node())
+			},
+		},
+		{
+			name: "empty list",
+			init: func() {
+				require.NoError(t, os.Setenv("SNOWFLAKE_NODE_LIST", "127.0.0.1,10.0.0.1"))
+				require.NoError(t, os.Setenv("HOST_IP", ""))
+			},
+			panic: false,
+			check: func() {
+				id := New()
+				assert.EqualValues(t, 1, id.Node())
+			},
+		},
+	}
+	for _, tt := range tests {
+		reset()
+		t.Run(tt.name, func(t *testing.T) {
+			defer func() {
+				os.Setenv("SNOWFLAKE_NODE_LIST", "")
+				os.Setenv("HOST_IP", "")
+				os.Setenv("SNOWFLAKE_DEFAULT", "")
+			}()
+			if tt.init != nil {
+				tt.init()
+			}
+			if tt.panic {
+				assert.Error(t, SetDefaultNodeFromEnv())
+				return
+			}
+			require.NoError(t, SetDefaultNodeFromEnv())
 			tt.check()
 		})
 	}
