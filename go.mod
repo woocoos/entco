@@ -7,7 +7,7 @@ require (
 	ariga.io/entcache v0.1.1-0.20230620164151-0eb723a11c40
 	entgo.io/contrib v0.4.6-0.20230615102013-704944fdc0f6
 	entgo.io/ent v0.12.4-0.20230702151415-1ec75238037c
-	github.com/99designs/gqlgen v0.17.36
+	github.com/99designs/gqlgen v0.17.37
 	github.com/XSAM/otelsql v0.23.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/casbin/casbin/v2 v2.73.1
@@ -16,9 +16,9 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.4
-	github.com/tsingsun/woocoo v0.3.1-0.20230817021527-461ec2d3409b
-	github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230817021527-461ec2d3409b
-	github.com/vektah/gqlparser/v2 v2.5.8
+	github.com/tsingsun/woocoo v0.3.1-0.20230910152326-0fecf352a5ef
+	github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230910152326-0fecf352a5ef
+	github.com/vektah/gqlparser/v2 v2.5.9
 	github.com/woocoos/casbin-ent-adapter v0.0.0-20230404005858-cd33f1b0b92e
 	go.opentelemetry.io/otel v1.16.0
 	golang.org/x/tools v0.9.3
@@ -51,6 +51,7 @@ require (
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
+	github.com/hashicorp/go-envparse v0.1.0 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.3 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
 	github.com/jhump/protoreflect v1.10.1 // indirect
