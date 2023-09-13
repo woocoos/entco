@@ -7,9 +7,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
+	"errors"
 	"fmt"
 	"github.com/tsingsun/woocoo/pkg/security"
-	"strconv"
 	"time"
 )
 
@@ -80,10 +80,13 @@ func AuditHook(next ent.Mutator) ent.Mutator {
 }
 
 func getUserID(ctx context.Context) (uid int, err error) {
-	up := security.GenericIdentityFromContext(ctx)
-	uid, err = strconv.Atoi(up.Name())
-	if err != nil {
-		err = fmt.Errorf("unexpected identity %w", err)
+	gi, ok := security.GenericIdentityFromContext(ctx)
+	if !ok {
+		return 0, errors.New("identity no found")
+	}
+	uid = gi.NameInt()
+	if uid == 0 {
+		return 0, fmt.Errorf("unexpected identity %s", gi.Name())
 	}
 	return
 }

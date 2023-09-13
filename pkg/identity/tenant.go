@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	tenantContextKey = "github.com_woocoos_entco_tenant_id"
+	tenantContextKey = "_woocoos/entco/tenant_id"
 	TenantHeaderKey  = "X-Tenant-ID"
 )
 
@@ -24,7 +24,7 @@ type TenantOptions struct {
 	Skipper    handler.Skipper
 }
 
-// TenantIDMiddleware returns a middleware to get tenant id from http request
+// TenantIDMiddleware returns middleware to get tenant id from http request
 func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 	opts := TenantOptions{
 		Lookup: "header:" + TenantHeaderKey,
@@ -87,7 +87,7 @@ func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 
 // RegistryTenantIDMiddleware register a middleware to get tenant id from request header
 func RegistryTenantIDMiddleware() web.Option {
-	return web.RegisterMiddlewareByFunc("tenant", TenantIDMiddleware)
+	return web.WithMiddlewareApplyFunc("tenant", TenantIDMiddleware)
 }
 
 func WithTenantID(parent context.Context, id int) context.Context {
