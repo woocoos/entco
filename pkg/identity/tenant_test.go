@@ -78,4 +78,22 @@ func TestTenantIDMiddleware(t *testing.T) {
 		router.ServeHTTP(w, req)
 		assert.Equal(t, 200, w.Code)
 	})
+	t.Run("validate err", func(t *testing.T) {
+		router := gin.New()
+		router.Use(TenantIDMiddleware(conf.New()))
+		router.GET("/test", func(c *gin.Context) {
+			c.String(200, "test")
+		})
+		req := httptest.NewRequest("GET", "/test", nil)
+		req.Header.Set("X-Tenant-ID", "0")
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+
+		req = httptest.NewRequest("GET", "/test", nil)
+		req.Header.Set("X-Tenant-ID", "-1")
+		w = httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+	})
 }

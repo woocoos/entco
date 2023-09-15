@@ -15,6 +15,8 @@ import (
 var (
 	tenantContextKey = "_woocoos/entco/tenant_id"
 	TenantHeaderKey  = "X-Tenant-ID"
+
+	ErrMisTenantID = errors.New("miss tenant id")
 )
 
 type TenantOptions struct {
@@ -72,12 +74,8 @@ func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("get tenant id error: %v", err))
 			return
 		}
-		if tid == "" {
-			c.AbortWithError(http.StatusBadRequest, errors.New("miss tenant id"))
-			return
-		}
 		v, err := strconv.Atoi(tid)
-		if err != nil {
+		if err != nil || v <= 0 {
 			c.AbortWithError(http.StatusBadRequest, fmt.Errorf("invalid tenant id %s:%v", tid, err))
 			return
 		}
