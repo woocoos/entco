@@ -16,8 +16,8 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.4
-	github.com/tsingsun/woocoo v0.3.1-0.20230915024621-579072770480
-	github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230915025512-63b84bf7d26b
+	github.com/tsingsun/woocoo v0.3.1-0.20230917150817-4ff6414bcd38
+	github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230917152545-2e3762efe21c
 	github.com/vektah/gqlparser/v2 v2.5.9
 	github.com/woocoos/casbin-ent-adapter v0.0.0-20230404005858-cd33f1b0b92e
 	go.opentelemetry.io/otel v1.16.0
@@ -37,6 +37,7 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
+	github.com/gin-contrib/cors v1.4.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
