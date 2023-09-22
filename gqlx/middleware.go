@@ -4,7 +4,11 @@ import (
 	"ariga.io/entcache"
 	"context"
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/gin-gonic/gin"
 	"github.com/tsingsun/woocoo/contrib/gql"
+	"github.com/tsingsun/woocoo/web"
+	"github.com/tsingsun/woocoo/web/handler"
+	"github.com/tsingsun/woocoo/web/handler/signer"
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/woocoos/entco/pkg/pagination"
 )
@@ -40,4 +44,19 @@ func ContextCache() graphql.ResponseMiddleware {
 		}
 		return next(ctx)
 	}
+}
+
+func RegisterTokenSignerMiddleware() web.Option {
+	return web.WithMiddlewareNewFunc(signer.TokenSignerName, func() handler.Middleware {
+		mw := signer.NewMiddleware(signer.TokenSignerName, handler.WithMiddlewareConfig(func(config any) {
+			c := config.(*signer.Config)
+			c.Skipper = func(c *gin.Context) bool {
+				if c.IsWebsocket() {
+					return true
+				}
+				return false
+			}
+		}))
+		return mw
+	})
 }

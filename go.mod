@@ -7,7 +7,7 @@ require (
 	ariga.io/entcache v0.1.1-0.20230620164151-0eb723a11c40
 	entgo.io/contrib v0.4.6-0.20230615102013-704944fdc0f6
 	entgo.io/ent v0.12.4-0.20230702151415-1ec75238037c
-	github.com/99designs/gqlgen v0.17.37
+	github.com/99designs/gqlgen v0.17.38
 	github.com/XSAM/otelsql v0.23.0
 	github.com/bwmarrin/snowflake v0.3.0
 	github.com/casbin/casbin/v2 v2.73.1
@@ -16,9 +16,9 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.4
-	github.com/tsingsun/woocoo v0.3.1-0.20230917150817-4ff6414bcd38
-	github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230917152545-2e3762efe21c
-	github.com/vektah/gqlparser/v2 v2.5.9
+	github.com/tsingsun/woocoo v0.3.1-0.20230922090437-500dbe1d58de
+	github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230922090437-500dbe1d58de
+	github.com/vektah/gqlparser/v2 v2.5.10
 	github.com/woocoos/casbin-ent-adapter v0.0.0-20230404005858-cd33f1b0b92e
 	go.opentelemetry.io/otel v1.16.0
 	golang.org/x/tools v0.9.3
@@ -82,6 +82,7 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
+	github.com/vmihailenco/go-tinylfu v0.2.2 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
@@ -94,8 +95,11 @@ require (
 	golang.org/x/exp v0.0.0-20221230185412-738e83a70c30 // indirect
 	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/oauth2 v0.11.0 // indirect
+	golang.org/x/sync v0.3.0 // indirect
 	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.12.0 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

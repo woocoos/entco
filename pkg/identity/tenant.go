@@ -35,9 +35,7 @@ func TenantIDMiddleware(cfg *conf.Configuration) gin.HandlerFunc {
 		panic(err)
 	}
 	if opts.Skipper == nil {
-		opts.Skipper = func(c *gin.Context) bool {
-			return handler.PathSkip(opts.Exclude, c.Request.URL)
-		}
+		opts.Skipper = handler.PathSkipper(opts.Exclude)
 	}
 	var findTenantValue func(c *gin.Context) (string, error)
 	switch opts.Lookup {
