@@ -3,10 +3,10 @@ module github.com/woocoos/entco
 go 1.20
 
 require (
-	ariga.io/atlas v0.12.1-0.20230620155259-b8e83e5e8ad6
+	ariga.io/atlas v0.14.1-0.20230918065911-83ad451a4935
 	ariga.io/entcache v0.1.1-0.20230620164151-0eb723a11c40
 	entgo.io/contrib v0.4.6-0.20230615102013-704944fdc0f6
-	entgo.io/ent v0.12.4-0.20230702151415-1ec75238037c
+	entgo.io/ent v0.12.4
 	github.com/99designs/gqlgen v0.17.38
 	github.com/XSAM/otelsql v0.23.0
 	github.com/bwmarrin/snowflake v0.3.0

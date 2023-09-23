@@ -1,12 +1,12 @@
-ariga.io/atlas v0.12.1-0.20230620155259-b8e83e5e8ad6 h1:mkLR3D46dXim5yLau65ufzAxcTU0lr08kaKfYlfXWQA=
-ariga.io/atlas v0.12.1-0.20230620155259-b8e83e5e8ad6/go.mod h1:+TR129FJZ5Lvzms6dvCeGWh1yR6hMvmXBhug4hrNIGk=
+ariga.io/atlas v0.14.1-0.20230918065911-83ad451a4935 h1:JnYs/y8RJ3+MiIUp+3RgyyeO48VHLAZimqiaZYnMKk8=
+ariga.io/atlas v0.14.1-0.20230918065911-83ad451a4935/go.mod h1:isZrlzJ5cpoCoKFoY9knZug7Lq4pP1cm8g3XciLZ0Pw=
 ariga.io/entcache v0.1.1-0.20230620164151-0eb723a11c40 h1:k90wgZm8xX1mIp87UQA96rahEVsZYPJTXRgR2nDSekA=
 ariga.io/entcache v0.1.1-0.20230620164151-0eb723a11c40/go.mod h1:SD+eMz5LdYeU21FTrTTYQeoVtUPkGWgrONXAG3FNn1I=
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 entgo.io/contrib v0.4.6-0.20230615102013-704944fdc0f6 h1:SfCS4+uhbcjcERajnuPWsxsdpVoziczxhNMOhPhgVUM=
 entgo.io/contrib v0.4.6-0.20230615102013-704944fdc0f6/go.mod h1:CUOp0ujdvm4vp2ItkoOujjLqXVulRvic3kyhmyY2kas=
-entgo.io/ent v0.12.4-0.20230702151415-1ec75238037c h1:63w0ILLHBEPwyeMO4en09BA8GLUwCwNfI+3C3MamOhY=
-entgo.io/ent v0.12.4-0.20230702151415-1ec75238037c/go.mod h1:e0wg9uUSbkGpXA83+ykxmFgk7sgjHy1jYk0LNokJU3g=
+entgo.io/ent v0.12.4 h1:LddPnAyxls/O7DTXZvUGDj0NZIdGSu317+aoNLJWbD8=
+entgo.io/ent v0.12.4/go.mod h1:Y3JVAjtlIk8xVZYSn3t3mf8xlZIn5SAOXZQxD6kKI+Q=
 github.com/99designs/gqlgen v0.17.38 h1:3r7G7i8UAdY0iYreNiBAA55auVsrowO0+ZhMl5g4GYU=
 github.com/99designs/gqlgen v0.17.38/go.mod h1:2v+dKtpI8mIzYeW9dYN8mO69tMmjszW2xKLNcWR/5wQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
