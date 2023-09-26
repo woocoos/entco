@@ -16,6 +16,7 @@ const (
 	SimpleStatusActive     SimpleStatus = "active"
 	SimpleStatusInactive   SimpleStatus = "inactive"
 	SimpleStatusProcessing SimpleStatus = "processing"
+	SimpleStatusDisabled   SimpleStatus = "disabled"
 )
 
 func (st SimpleStatus) String() string {
@@ -25,7 +26,7 @@ func (st SimpleStatus) String() string {
 // SimpleStatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
 func SimpleStatusValidator(st SimpleStatus) error {
 	switch st {
-	case SimpleStatusActive, SimpleStatusInactive, SimpleStatusProcessing:
+	case SimpleStatusActive, SimpleStatusInactive, SimpleStatusProcessing, SimpleStatusDisabled:
 		return nil
 	default:
 		return fmt.Errorf("status: invalid enum value for status field: %q", st)
@@ -38,6 +39,7 @@ func (SimpleStatus) Values() []string {
 		SimpleStatusActive.String(),
 		SimpleStatusInactive.String(),
 		SimpleStatusProcessing.String(),
+		SimpleStatusDisabled.String(),
 	}
 }
 
@@ -64,5 +66,6 @@ func (st SimpleStatus) ProtoAnnotation() schema.Annotation {
 		SimpleStatusActive.String():     1,
 		SimpleStatusInactive.String():   2,
 		SimpleStatusProcessing.String(): 3,
+		SimpleStatusDisabled.String():   4,
 	})
 }
