@@ -12,17 +12,6 @@ import (
 	"time"
 )
 
-// The Query interface represents an operation that queries with WhereP.
-type (
-	Query interface {
-		WhereP(...func(*sql.Selector))
-	}
-
-	Mutator interface {
-		Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
-	}
-)
-
 // SoftDeleteMixin implements the soft delete pattern for schemas.
 type SoftDeleteMixin[T Query, Q Mutator] struct {
 	mixin.Schema

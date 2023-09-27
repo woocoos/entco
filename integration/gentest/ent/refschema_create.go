@@ -98,11 +98,15 @@ func (rsc *RefSchemaCreate) createSpec() (*RefSchema, *sqlgraph.CreateSpec) {
 // RefSchemaCreateBulk is the builder for creating many RefSchema entities in bulk.
 type RefSchemaCreateBulk struct {
 	config
+	err      error
 	builders []*RefSchemaCreate
 }
 
 // Save creates the RefSchema entities in the database.
 func (rscb *RefSchemaCreateBulk) Save(ctx context.Context) ([]*RefSchema, error) {
+	if rscb.err != nil {
+		return nil, rscb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rscb.builders))
 	nodes := make([]*RefSchema, len(rscb.builders))
 	mutators := make([]Mutator, len(rscb.builders))
