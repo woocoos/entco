@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"github.com/woocoos/entcache"
 	"github.com/woocoos/entco/integration/gentest/ent/refschema"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
 )
@@ -299,7 +300,7 @@ func (c *RefSchemaClient) Query() *RefSchemaQuery {
 
 // Get returns a RefSchema entity by its id.
 func (c *RefSchemaClient) Get(ctx context.Context, id int) (*RefSchema, error) {
-	return c.Query().Where(refschema.ID(id)).Only(ctx)
+	return c.Query().Where(refschema.ID(id)).Only(entcache.WithEntryKey(ctx, "RefSchema", id))
 }
 
 // GetX is like Get, but panics if an error occurs.
@@ -432,7 +433,7 @@ func (c *UserClient) Query() *UserQuery {
 
 // Get returns a User entity by its id.
 func (c *UserClient) Get(ctx context.Context, id int) (*User, error) {
-	return c.Query().Where(user.ID(id)).Only(ctx)
+	return c.Query().Where(user.ID(id)).Only(entcache.WithEntryKey(ctx, "User", id))
 }
 
 // GetX is like Get, but panics if an error occurs.
@@ -446,7 +447,8 @@ func (c *UserClient) GetX(ctx context.Context, id int) *User {
 
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
-	return c.hooks.User
+	hooks := c.hooks.User
+	return append(hooks[:len(hooks):len(hooks)], user.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

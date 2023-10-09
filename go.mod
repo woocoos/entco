@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	ariga.io/atlas v0.14.1-0.20230918065911-83ad451a4935
-	ariga.io/entcache v0.1.1-0.20230620164151-0eb723a11c40
 	entgo.io/contrib v0.4.6-0.20230615102013-704944fdc0f6
 	entgo.io/ent v0.12.4
 	github.com/99designs/gqlgen v0.17.38
@@ -16,10 +15,11 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/shopspring/decimal v1.3.1
 	github.com/stretchr/testify v1.8.4
-	github.com/tsingsun/woocoo v0.4.0
+	github.com/tsingsun/woocoo v0.4.1-0.20231007104131-727c230deab0
 	github.com/tsingsun/woocoo/contrib/gql v0.0.0-20230922090437-500dbe1d58de
 	github.com/vektah/gqlparser/v2 v2.5.10
 	github.com/woocoos/casbin-ent-adapter v0.0.0-20230404005858-cd33f1b0b92e
+	github.com/woocoos/entcache v0.0.0-20231009085009-0e2ea3b3cf40
 	go.opentelemetry.io/otel v1.16.0
 	golang.org/x/tools v0.9.3
 )
@@ -47,7 +47,6 @@ require (
 	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/uuid v1.3.0 // indirect

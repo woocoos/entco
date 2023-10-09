@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"errors"
 	"github.com/shopspring/decimal"
+	"github.com/woocoos/entco/schemax"
 	"github.com/woocoos/entco/schemax/fieldx"
 	"time"
 )
@@ -48,4 +49,10 @@ func (User) Fields() []ent.Field {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return nil
+}
+
+func (User) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		schemax.NotifyMixin{},
+	}
 }

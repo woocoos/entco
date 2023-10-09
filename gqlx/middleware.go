@@ -1,7 +1,6 @@
 package gqlx
 
 import (
-	"ariga.io/entcache"
 	"context"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/gin-gonic/gin"
@@ -31,16 +30,6 @@ func SimplePagination() graphql.ResponseMiddleware {
 			if sp != nil {
 				ctx = pagination.WithSimplePagination(ctx, sp)
 			}
-		}
-		return next(ctx)
-	}
-}
-
-// ContextCache is a middleware for entcache
-func ContextCache() graphql.ResponseMiddleware {
-	return func(ctx context.Context, next graphql.ResponseHandler) *graphql.Response {
-		if op := graphql.GetOperationContext(ctx).Operation; op != nil && op.Operation == ast.Query {
-			ctx = entcache.NewContext(ctx)
 		}
 		return next(ctx)
 	}

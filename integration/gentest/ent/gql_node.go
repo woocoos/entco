@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql/schema"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
+	"github.com/woocoos/entcache"
 	"github.com/woocoos/entco/integration/gentest/ent/refschema"
 	"github.com/woocoos/entco/integration/gentest/ent/user"
 	"golang.org/x/sync/semaphore"
@@ -99,7 +100,7 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 		if err != nil {
 			return nil, err
 		}
-		n, err := query.Only(ctx)
+		n, err := query.Only(entcache.WithRefEntryKey(ctx, "RefSchema", id))
 		if err != nil {
 			return nil, err
 		}
@@ -111,7 +112,7 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 		if err != nil {
 			return nil, err
 		}
-		n, err := query.Only(ctx)
+		n, err := query.Only(entcache.WithRefEntryKey(ctx, "User", id))
 		if err != nil {
 			return nil, err
 		}

@@ -65,6 +65,19 @@ func ChangeRelayNodeType() entgql.SchemaHook {
 	}
 }
 
+// WithGqlWithTemplates is a schema hook for replace entgql default template.
+//
+// extensions:
+//  1. NodeTemplate:
+//     Noder: add entcache context
+func WithGqlWithTemplates() entgql.ExtensionOption {
+	nodeTpl := gen.MustParse(gen.NewTemplate("node").
+		Funcs(entgql.TemplateFuncs).ParseFS(_templates, "template/node.tmpl"))
+	return entgql.WithTemplates(append(entgql.AllTemplates, nodeTpl)...)
+}
+
+// ReplaceGqlMutationInput is a schema hook for replace gql mutation input template.
+// Deprecated: not use
 func ReplaceGqlMutationInput() entgql.ExtensionOption {
 	rt := gen.MustParse(gen.NewTemplate("gql_mutation_input").
 		Funcs(entgql.TemplateFuncs).
