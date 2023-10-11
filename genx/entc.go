@@ -66,6 +66,7 @@ func ChangeRelayNodeType() entgql.SchemaHook {
 }
 
 // WithGqlWithTemplates is a schema hook for replace entgql default template.
+// Note: this option must put before WithWhereInputs or which changed entgql templates option.
 //
 // extensions:
 //  1. NodeTemplate:
