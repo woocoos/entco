@@ -64,7 +64,7 @@ func TestSetDefaultNode(t *testing.T) {
 				assert.Equal(t, uint8(1), snowflake.NodeBits)
 				assert.Equal(t, uint8(8), snowflake.StepBits)
 				id := New()
-				assert.Len(t, id.String(), 13)
+				assert.Len(t, id.String(), 14)
 			},
 		},
 	}

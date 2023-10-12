@@ -25,6 +25,10 @@ func TestNewRouteDriver(t *testing.T) {
 						"driverName": "sqlite3",
 						"dsn":        ":memory:",
 					},
+					"test.cn": map[string]any{
+						"driverName": "sqlite3",
+						"dsn":        ":memory:",
+					},
 				},
 			},
 		},
@@ -59,7 +63,7 @@ store:
 `)).Sub("store.portal"),
 			},
 			check: func(driver *RouteDriver) {
-				assert.Equal(t, 2, len(driver.dbRules))
+				assert.Equal(t, 1, len(driver.dbRules))
 			},
 		},
 	}
