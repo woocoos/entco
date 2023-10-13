@@ -4,12 +4,15 @@ import (
 	"context"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"fmt"
 	"github.com/XSAM/otelsql"
 	"github.com/tsingsun/woocoo"
 	"github.com/tsingsun/woocoo/contrib/telemetry"
+	"github.com/tsingsun/woocoo/pkg/cache"
 	"github.com/tsingsun/woocoo/pkg/cache/lfu"
 	"github.com/tsingsun/woocoo/pkg/cache/redisc"
 	"github.com/tsingsun/woocoo/pkg/conf"
+	"github.com/tsingsun/woocoo/pkg/log"
 	"github.com/tsingsun/woocoo/pkg/store/sqlx"
 	"github.com/woocoos/entco/ecx"
 	"github.com/woocoos/entco/pkg/snowflake"
@@ -52,7 +55,15 @@ func BuildAppComponents(app *woocoo.App) {
 // BuildCacheComponents 从配置文件中加载缓存服务组件.
 func BuildCacheComponents(cnf *conf.AppConfiguration) {
 	cnf.Map("cache", func(root string, sub *conf.Configuration) {
+		if !sub.IsSet("driverName") {
+			return
+		}
 		var err error
+		name := sub.String("driverName")
+		if _, err = cache.GetCache(name); err == nil {
+			log.Warn(fmt.Errorf("driver already registered for name %q", name))
+			return
+		}
 		switch root {
 		case "redis":
 			_, err = redisc.New(sub)
