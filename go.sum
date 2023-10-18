@@ -263,8 +263,8 @@ github.com/vmihailenco/tagparser/v2 v2.0.0 h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAh
 github.com/vmihailenco/tagparser/v2 v2.0.0/go.mod h1:Wri+At7QHww0WTrCBeu4J6bNtoV6mEfg5OIWRZA9qds=
 github.com/woocoos/casbin-ent-adapter v0.0.0-20230404005858-cd33f1b0b92e h1:GbxL4wa7cs+l7Bi6L2mjfkFiqDK9t6N2oyOrNp+yV1U=
 github.com/woocoos/casbin-ent-adapter v0.0.0-20230404005858-cd33f1b0b92e/go.mod h1:44V48kYKt7r9gWei7Ld+QaL0qVIBlOWrhkNTVMpnx3I=
-github.com/woocoos/entcache v0.0.0-20231012065054-81b26c239c3d h1:7uSidQ73bfzkQEfQSjj7vj8u5YXb+Mk92B3IA1XA398=
-github.com/woocoos/entcache v0.0.0-20231012065054-81b26c239c3d/go.mod h1:zNKzfOB5I4gHoDDZrrsE/9AWVGm4wfKJkm7DxTl+aNc=
+github.com/woocoos/entcache v0.0.0-20231018091037-8acc7d96a1ce h1:tumAbXe4owDJnbIj4wKKvnlwl/KxVY0ulZwkrU1LiBk=
+github.com/woocoos/entcache v0.0.0-20231018091037-8acc7d96a1ce/go.mod h1:zNKzfOB5I4gHoDDZrrsE/9AWVGm4wfKJkm7DxTl+aNc=
 github.com/yuin/gopher-lua v1.1.0 h1:BojcDhfyDWgU2f2TOzYK/g5p2gxMrku8oupLDqlnSqE=
 github.com/yuin/gopher-lua v1.1.0/go.mod h1:GBR0iDaNXjAgGg9zfCvksxSRnQx76gclCIb7kdAd1Pw=
 github.com/zclconf/go-cty v1.8.0 h1:s4AvqaeQzJIu3ndv4gVIhplVD0krU+bgrcLSVUnaWuA=
