@@ -58,7 +58,7 @@ func NewTenantMixin[T Query, Q Mutator](qf func(ent.Query) (T, error)) TenantMix
 
 func (TenantMixin[T, Q]) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int(FieldTenantID).Immutable().SchemaType(IntID{}.SchemaType()),
+		field.Int(FieldTenantID).Immutable().SchemaType(SnowFlakeID{}.SchemaType()),
 	}
 }
 
